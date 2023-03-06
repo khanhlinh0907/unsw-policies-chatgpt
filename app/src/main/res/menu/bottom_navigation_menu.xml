@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/home"
+        android:enabled="true"
+        android:icon="@drawable/homepage_icon"
+        android:title="@string/nav_home"
+        app:itemIconSize="2dp"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/search"
+        android:enabled="true"
+        android:icon="@drawable/search_icon"
+        android:title="@string/nav_search"
+        app:itemIconSize="2dp"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/chatbot"
+        android:enabled="true"
+        android:icon="@drawable/chatbot_icon"
+        android:title="@string/nav_chatbot"
+        app:itemIconSize="4dp"
+        app:showAsAction="always" />
+</menu>
