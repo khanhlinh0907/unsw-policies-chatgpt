@@ -17,16 +17,18 @@ public class WebActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
         final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Loading Data...");
+        progressDialog.setMessage("Loading PDF...");
         progressDialog.setCancelable(false);
 
         String url = getIntent().getStringExtra("pdf_url");
         WebView webView = findViewById(R.id.web);
         webView.setWebViewClient(new WebViewClient());
         webView.getSettings().setSupportZoom(true);
+        webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setDisplayZoomControls(true);
         webView.loadUrl("https://docs.google.com/gview?embedded=true&url=" + url);
-        //"https://docs.google.com/gview?embedded=true&url="
+
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
