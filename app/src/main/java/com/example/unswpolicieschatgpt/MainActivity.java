@@ -3,22 +3,18 @@ package com.example.unswpolicieschatgpt;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
-
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
+    BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +22,34 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        //Bottom Navigation View
+        bottomNav = findViewById(R.id.bottomNavigationView);
+
+        /**
+         * Set up Bottom Navigation View
+         */
+        bottomNav.setSelectedItemId(R.id.home);
+
+        //Perform item selected listener
+        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                //Check which item is selected
+                switch (item.getItemId()) {
+                    case R.id.home:
+                        return true;
+                    case R.id.chatbot:
+                        startActivity(new Intent(getApplicationContext(), ChatBotActivity.class));
+                        overridePendingTransition(0, 0);
+                        return true;
+                    case R.id.search:
+                        startActivity(new Intent(getApplicationContext(), SearchActivity.class));
+                        overridePendingTransition(0, 0);
+                        return true;
+                }
+                return false;
+            }
+        });
         /*
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

@@ -31,6 +31,10 @@ public class SearchActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(MenuItem item) {
                 //Check which item is selected
                 switch (item.getItemId()) {
+                    case R.id.home:
+                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        overridePendingTransition(0, 0);
+                        return true;
                     case R.id.chatbot:
                         startActivity(new Intent(getApplicationContext(), ChatBotActivity.class));
                         overridePendingTransition(0, 0);
