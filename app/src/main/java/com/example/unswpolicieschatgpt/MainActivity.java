@@ -20,8 +20,6 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    private AppBarConfiguration appBarConfiguration;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Button openPDF;
