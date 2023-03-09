@@ -13,4 +13,13 @@
     <string name="nav_chatbot">ChatBot</string>
     <string name="sort_1">Sort by Title</string>
     <string name="sort_2">Sort by Category</string>
+
+    <string-array name="policy_categories">
+        <item>Category 1</item>
+        <item>Category 2</item>
+        <item>Category 3</item>
+        <item>Category 4</item>
+        <item>Category 5</item>
+    </string-array>
+
 </resources>
