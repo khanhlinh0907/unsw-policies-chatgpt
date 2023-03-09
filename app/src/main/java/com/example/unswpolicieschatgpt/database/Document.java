@@ -33,9 +33,9 @@ public class Document {
 
     }
 
-    public Document(int id, String pdf_url, String title, String purpose, String scope,
-                    boolean local_doc_permit, String content, String parent_doc,
-                    String contact_officer, String responsible_officer) {
+    public Document(int id,  String title, String purpose, String scope, boolean local_doc_permit,
+                    String content, String parent_doc,
+                    String contact_officer, String responsible_officer, String pdf_url) {
         this.id = id;
         this.pdf_url = pdf_url;
         this.title = title;
