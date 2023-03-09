@@ -1,4 +1,4 @@
-package com.example.unswpolicieschatgpt;
+package com.example.unswpolicieschatgpt.database;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
