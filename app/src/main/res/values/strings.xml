@@ -15,11 +15,16 @@
     <string name="sort_2">Sort by Category</string>
 
     <string-array name="policy_categories">
-        <item>Category 1</item>
-        <item>Category 2</item>
-        <item>Category 3</item>
-        <item>Category 4</item>
-        <item>Category 5</item>
+        <item>Any category</item>
+        <item>Employment</item>
+        <item>Engagement</item>
+        <item>Facilities and IT</item>
+        <item>Finance and Procurement</item>
+        <item>Governance and Management</item>
+        <item>Health and Safety</item>
+        <item>Research and Training</item>
+        <item>Student management and support</item>
+        <item>Teaching and Learning</item>
     </string-array>
 
 </resources>
