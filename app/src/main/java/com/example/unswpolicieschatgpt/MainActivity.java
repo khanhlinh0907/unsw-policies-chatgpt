@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                             URL pdfURL = new URL("https://www.unsw.edu.au/content/dam/pdfs/governance/policy/2022-01-policies/assessmentdesignprocedure.pdf");
                             PDFTextExtractor textExtractor = new PDFTextExtractor();
                             String text = textExtractor.PDFTextExtractor(MainActivity.this, pdfURL);
+                            //Display text for testing
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -104,10 +105,6 @@ public class MainActivity extends AppCompatActivity {
                             throw new RuntimeException(e);
                         }
                     }
-                    //Test pdf extract
-
-                    /* {*/
-
 
                 }).start();
             }
