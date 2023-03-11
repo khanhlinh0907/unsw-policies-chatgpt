@@ -13,6 +13,8 @@ public class Document {
     private String pdf_url;
     @ColumnInfo(name = "title")
     private String title;
+    @ColumnInfo(name = "category")
+    private String category;
     @ColumnInfo(name = "purpose")
     private String purpose;
     @ColumnInfo(name = "scope")
@@ -62,6 +64,10 @@ public class Document {
         this.title = title;
     }
 
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     public void setPurpose(String purpose) {
         this.purpose = purpose;
     }
@@ -101,6 +107,10 @@ public class Document {
 
     public String getTitle() {
         return title;
+    }
+
+    public String getCategory() {
+        return category;
     }
 
     public String getPurpose() {

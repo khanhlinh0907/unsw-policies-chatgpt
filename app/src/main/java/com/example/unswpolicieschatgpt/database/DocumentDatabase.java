@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @Database(entities = {Document.class}, version = 1, exportSchema = false)
 public abstract class DocumentDatabase extends RoomDatabase {
     //Define database name
-    private static final String DATABASE_NAME = "MCQ_Database";
+    private static final String DATABASE_NAME = "Document_Database";
     //Create database instance
     private static DocumentDatabase database;
 
@@ -46,7 +46,6 @@ public abstract class DocumentDatabase extends RoomDatabase {
                 "Assessment Implementation Procedure: https://www.unsw.edu.au/content/dam/pdfs/governance/policy/2022-01-policies/assessmentimplementationprocedure.pdf",
                 "Pro-Vice-Chancellor (Education and Student Experience)","Deputy Vice-Chancellor Academic and Student Life",
                 "https://www.unsw.edu.au/content/dam/pdfs/governance/policy/2022-01-policies/assessmentdesignprocedure.pdf"));
-
         return documentList;
     }
 }

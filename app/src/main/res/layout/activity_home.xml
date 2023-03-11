@@ -9,8 +9,8 @@
         android:id="@+id/openPDF"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="158dp"
-        android:layout_marginBottom="342dp"
+        android:layout_marginStart="160dp"
+        android:layout_marginBottom="312dp"
         android:text="Open PDF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -27,5 +27,15 @@
         app:menu="@menu/bottom_navigation_menu"
         >
     </com.google.android.material.bottomnavigation.BottomNavigationView>
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="179dp"
+        android:layout_marginBottom="208dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
