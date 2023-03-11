@@ -11,30 +11,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHolder> implements Filterable {
-
     private List<Policy> mPolicies, mPoliciesFiltered;
     private PolicyRecyclerViewInterface mInterface;
-    private String mSelectedCategory = "";
-    private List<String> mCategories;
 
     public PolicyAdapter(List<Policy> policies, PolicyRecyclerViewInterface policyInterface) {
         mPolicies = policies;
-        mPoliciesFiltered = policies;
+        mPoliciesFiltered = new ArrayList<>(policies);
         mInterface = policyInterface;
-
-        mSelectedCategory = "All";
-        mCategories = Arrays.asList("All", "Category 1", "Category 2", "Category 3");
-
     }
-
-//    public void setSelectedCategory(String category) {
-//        mSelectedCategory = category;
-//        getFilter().filter("");
-//    }
 
     @NonNull
     @Override
@@ -47,8 +34,6 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
     public void onBindViewHolder(@NonNull PolicyAdapter.MyViewHolder holder, int position) {
         Policy policy = mPoliciesFiltered.get(position);
         holder.mName.setText(policy.getName());
-        //holder.mCategory.setText(policy.getCategory());
-
     }
 
     @Override
@@ -67,9 +52,7 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
                 } else {
                     ArrayList<Policy> filteredList = new ArrayList<>();
                     for(Policy policy : mPolicies) {
-                        if (policy.getName().contains(query) &&
-                                (mSelectedCategory.isEmpty() ||
-                                        policy.getCategory().equals(mSelectedCategory))) {
+                        if(policy.getName().contains(query)) {
                             filteredList.add(policy);
                         }
                     }
@@ -87,6 +70,7 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
             }
         };
     }
+
     class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView mName;
 
@@ -102,3 +86,4 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
         }
     }
 }
+

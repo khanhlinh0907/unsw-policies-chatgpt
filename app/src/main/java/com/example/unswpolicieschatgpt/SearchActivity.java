@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -25,50 +26,29 @@ import java.util.List;
 public class SearchActivity extends AppCompatActivity implements PolicyRecyclerViewInterface {
     BottomNavigationView bottomNav;
 
-    // Policy RecyclerView
-    static final String TAG = "SearchActivity";
+    //TAG
+    static final String TAG = "MainActivity";
+
+    // RecyclerView
     RecyclerView mRecyclerView;
     private List<Policy> policyList = new ArrayList<>();
     private PolicyAdapter adapter;
-
-    private Spinner mSpinner;
-
-    private List <String> mCategories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        // Policy RecyclerView
+        // RecyclerView
         mRecyclerView = findViewById(R.id.rvList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         mRecyclerView.setLayoutManager(layoutManager);
 
-        getPolicyData();
+        getData();
         adapter = new PolicyAdapter(policyList, (PolicyRecyclerViewInterface) this);
         mRecyclerView.setAdapter(adapter);
 
-        // Category Filter and Spinner
-//        mCategories = getCategories();
-//        mSpinner = findViewById(R.id.spinner);
-//        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-//                android.R.layout.simple_spinner_dropdown_item, mCategories);
-//        mSpinner.setAdapter(adapter);
-//        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//                String category = mCategories.get(i);
-//                adapter.setSelectedCategory(category);
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView) {
-//                adapter.setSelectedCategory("");
-//            }
-//        });
-
-            //Bottom Navigation View
+        //Bottom Navigation View
         bottomNav = findViewById(R.id.bottomNavigationView);
 
         /**
@@ -99,13 +79,14 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
 
     }
 
-    private void getPolicyData(){
-        policyList.add(new Policy("Assessment Design Procedure", "Assessment"));
-        policyList.add(new Policy("Assessment Implementation Procedure", "Assessment"));
-        policyList.add(new Policy("Assessment Policy", "Assessment"));
-        policyList.add(new Policy("Plagiarism Policy", "Assessment"));
-        policyList.add(new Policy("Marking Policy", "Assessment"));
-        policyList.add(new Policy("Grading Policy", "Assessment"));
+    // Adding Dummy Data for Policy RecyclerView
+    private void getData(){
+        policyList.add(new Policy("Assessment Design Procedure", "Assessments"));
+        policyList.add(new Policy("Assessment Implementation Procedure", "Assessments"));
+        policyList.add(new Policy("Assessment Policy", "Assessments"));
+        policyList.add(new Policy("Employment", "Assessments"));
+        policyList.add(new Policy("Finance", "Assessments"));
+        policyList.add(new Policy("Governance", "Assessments"));
     }
 
     @Override
@@ -122,14 +103,14 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                Log.d(TAG, "Line 58:: Query = "+s);
+                Log.d(TAG, "Line 100:: Query = "+s);
                 adapter.getFilter().filter(s);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-                Log.d(TAG, "Line 58:: Query = "+s);
+                Log.d(TAG, "Line 107:: Query = "+s);
                 adapter.getFilter().filter(s);
                 return false;
             }
