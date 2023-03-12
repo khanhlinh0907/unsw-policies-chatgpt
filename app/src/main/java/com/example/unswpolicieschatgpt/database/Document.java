@@ -35,15 +35,13 @@ public class Document {
 
     }
 
-    public Document(int id,  String title, String purpose, String scope, boolean local_doc_permit,
-                    String content, String parent_doc,
-                    String contact_officer, String responsible_officer, String pdf_url) {
+    public Document(int id,  String title, String purpose, String scope,
+                    String content, String contact_officer, String responsible_officer, String parent_doc) {
         this.id = id;
-        this.pdf_url = pdf_url;
+        //this.pdf_url = pdf_url;
         this.title = title;
         this.purpose = purpose;
         this.scope = scope;
-        this.local_doc_permit = local_doc_permit;
         this.content = content;
         this.parent_doc = parent_doc;
         this.contact_officer = contact_officer;

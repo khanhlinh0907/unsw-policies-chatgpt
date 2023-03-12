@@ -1,9 +1,9 @@
 package com.example.unswpolicieschatgpt;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
+import com.example.unswpolicieschatgpt.database.Document;
 import com.example.unswpolicieschatgpt.database.PDFTextExtractor;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader;
@@ -12,13 +12,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
 
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNav;
@@ -91,13 +96,57 @@ public class MainActivity extends AppCompatActivity {
                             PDFBoxResourceLoader.init(getApplicationContext());
                             URL pdfURL = new URL("https://www.unsw.edu.au/content/dam/pdfs/governance/policy/2022-01-policies/assessmentdesignprocedure.pdf");
                             PDFTextExtractor textExtractor = new PDFTextExtractor();
-                            String text = textExtractor.PDFTextExtractor(MainActivity.this, pdfURL);
+                            textExtractor.PDFTextExtractor(MainActivity.this, pdfURL);
+
                             //Display text for testing
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    TextView content = findViewById(R.id.content);
-                                    content.setText(text);
+                                    TextView docTitle = findViewById(R.id.docTitle);
+                                    TextView purpose = findViewById(R.id.purpose);
+                                    TextView scope = findViewById(R.id.scope);
+                                    TextView docContent = findViewById(R.id.docContent);
+                                    TextView responsible_officer = findViewById(R.id.responsible_officer);
+                                    TextView contact_officer = findViewById(R.id.contact_officer);
+                                    TextView parent_doc = findViewById(R.id.parentDoc);
+
+
+                                    //Test take data out of database
+                                    ArrayList<Document> documentList = new ArrayList<>();
+                                    final String DB_URL = "jdbc:mysql://localhost/documentdatabase";
+                                    Connection conn = null;
+                                    try {
+                                        conn = DriverManager.getConnection(DB_URL);
+                                        Statement st = conn.createStatement();
+                                        String query = "SELECT * FROM DOCUMENT" ;
+                                        ResultSet rs = st.executeQuery(query);
+                                        while (rs.next()) {
+                                            documentList.add(new Document(rs.getInt(1), rs.getString(2),
+                                                    rs.getString(3), rs.getString(4), rs.getString(5),
+                                                    rs.getString(6), rs.getString(7), rs.getString(8)));
+                                        }
+                                        Document selectedDoc = documentList.get(0);
+                                        docTitle.setText(selectedDoc.getTitle());
+                                        purpose.setText(selectedDoc.getPurpose());
+                                        scope.setText(selectedDoc.getScope());
+                                        docContent.setText(selectedDoc.getContent());
+                                        responsible_officer.setText(selectedDoc.getResponsible_officer());
+                                        contact_officer.setText(selectedDoc.getContact_officer());
+                                        parent_doc.setText(selectedDoc.getParent_doc());
+
+                                        rs.close();
+                                        st.close();
+
+                                    } catch (SQLException e) {
+                                        throw new RuntimeException(e);
+                                    }
+
+
+
+
+
+
+
                                 }
                             });
 

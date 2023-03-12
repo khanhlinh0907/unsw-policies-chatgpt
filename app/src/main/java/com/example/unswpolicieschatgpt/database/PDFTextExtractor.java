@@ -1,9 +1,6 @@
 package com.example.unswpolicieschatgpt.database;
 
 import android.content.Context;
-import android.net.Uri;
-
-import androidx.room.Room;
 
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader;
 import com.tom_roush.pdfbox.pdmodel.PDDocument;
@@ -22,11 +19,11 @@ import java.sql.Statement;
 
 
 public class PDFTextExtractor {
-    final String DB_URL = "jdbc:mysql://localhost/documentdatabase";
+    final String DB_URL = "jdbc:mysql://127.0.0.1:3306/documentdatabase";
     // Define the schema of the table
     final String TABLE_NAME = "DOCUMENT";
 
-    public String PDFTextExtractor(Context context, URL url) {
+    public void PDFTextExtractor(Context context, URL url) {
         PDFBoxResourceLoader.init(context);
         PDDocument pdfDocument = new PDDocument();
         try {
@@ -34,14 +31,16 @@ public class PDFTextExtractor {
             System.out.println(pdfDocument.getNumberOfPages());
             PDFTextStripper pdfStripper = new PDFTextStripper();
             String text = pdfStripper.getText(pdfDocument);
+            setupDatabase();
+            insertDocument(text);
 
-            setupDatabase(text);
-
-            return text;
+            pdfDocument.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } finally {
             if (pdfDocument != null) {
@@ -53,36 +52,43 @@ public class PDFTextExtractor {
             }
 
         }
-        return null;
     }
 
-    private void setupDatabase(String text) throws SQLException {
+
+    private void setupDatabase() throws ClassNotFoundException {
         /**
          *  Create MySQL table to store database
          */
         //Connect to the database
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection conn = null;
+        try {
+            conn = DriverManager.getConnection(DB_URL);
+            Statement st = conn.createStatement();
+            //Create the table of it does not exist
+            String createTableQuery = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
+                    + "id INTEGER PRIMARY KEY autoincrement, "
+                    + "title VARCHAR(255) NOT NULL, "
+                    + "URL  VARCHAR(255)) NOT NULL, "
+                    + "purpose VARCHAR(255)) NOT NULL, "
+                    + "scope VARCHAR(255)) NOT NULL, "
+                    + "content VARCHAR(255)) NOT NULL, "
+                    + "responsible_officer VARCHAR(255)) NOT NULL, "
+                    + "contact_officer VARCHAR(255)) NOT NULL, "
+                    + "parent_doc VARCHAR(255)), ";
+            st.executeUpdate(createTableQuery);
 
-        Connection conn = DriverManager.getConnection(DB_URL);
-        Statement st = conn.createStatement();
+            st.close();
+            conn.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
-        //Create the table of it does not exist
-        String createTableQuery = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
-                + "id INTEGER PRIMARY KEY autoincrement, "
-                + "title VARCHAR(255) NOT NULL, "
-                + "URL  VARCHAR(255)) NOT NULL, "
-                + "purpose VARCHAR(255)) NOT NULL, "
-                + "scope VARCHAR(255)) NOT NULL, "
-                + "content VARCHAR(255)) NOT NULL, "
-                + "responsible_officer VARCHAR(255)) NOT NULL, "
-                + "contact_officer VARCHAR(255)) NOT NULL, "
-                + "parent_doc VARCHAR(255)), ";
-        st.executeUpdate(createTableQuery);
-        insertDocument(text);
     }
 
     private void insertDocument(String text) throws SQLException {
         //Table schema
-        String title, purpose, scope, content, responsible_officer, contact_officer;
+        String title, purpose, scope, content, responsible_officer, contact_officer, parent_doc;
         //Find title;
         title = text.substring(0, text.indexOf("Page 1 of 6"));
 
@@ -125,15 +131,18 @@ public class PDFTextExtractor {
          */
         // Procedure documents have parent_doc as Policy document
         if (title.contains("Procedure")) {
-            String parent_doc = text.substring(text.indexOf("Parent Document") + 1,
+            parent_doc = text.substring(text.indexOf("Parent Document") + 1,
                     text.indexOf("Supporting Documents"));
+        } else {
+            parent_doc = null;
         }
 
         Connection conn = DriverManager.getConnection(DB_URL);
         Statement st = conn.createStatement();
         PreparedStatement pSt = conn.prepareStatement("INSERT OR IGNORE INTO " + TABLE_NAME
-                + "(id, title, purpose, scope, content, responsible_officer, contact_officer)"
-                + "VALUES (?,?,?,?,?,?,?)"
+                + "(id, title, purpose, scope, content, responsible_officer, contact_officer," +
+                "parent_doc)"
+                + "VALUES (?,?,?,?,?,?,?,?)"
         );
 
         /**
@@ -146,6 +155,7 @@ public class PDFTextExtractor {
         pSt.setString(5, content);
         pSt.setString(6, responsible_officer);
         pSt.setString(7, contact_officer);
+        pSt.setString(8, parent_doc);
 
         st.close();
         conn.close();

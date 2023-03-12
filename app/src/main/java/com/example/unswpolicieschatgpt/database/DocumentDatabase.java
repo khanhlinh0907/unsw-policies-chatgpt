@@ -19,7 +19,7 @@ public abstract class DocumentDatabase extends RoomDatabase {
     public ArrayList<Document> insertDocument() {
         DocumentDao mainDao = database.mainDao();
         ArrayList<Document> documentList = new ArrayList<>();
-        mainDao.insert(new Document(1, "Assessment Design Procedure", "To specify the processes and " +
+        /*mainDao.insert(new Document(1, "Assessment Design Procedure", "To specify the processes and " +
                 "responsibilities for the design of assessment of student learning.", "The procedure applies to: " +
                 "- assessment in all undergraduate, honours and postgraduate coursework programs, " +
                 "the coursework component of higher degree research programs and non-award courses " +
@@ -46,6 +46,9 @@ public abstract class DocumentDatabase extends RoomDatabase {
                 "Assessment Implementation Procedure: https://www.unsw.edu.au/content/dam/pdfs/governance/policy/2022-01-policies/assessmentimplementationprocedure.pdf",
                 "Pro-Vice-Chancellor (Education and Student Experience)","Deputy Vice-Chancellor Academic and Student Life",
                 "https://www.unsw.edu.au/content/dam/pdfs/governance/policy/2022-01-policies/assessmentdesignprocedure.pdf"));
+
+        return documentList;
+         */
         return documentList;
     }
 }
