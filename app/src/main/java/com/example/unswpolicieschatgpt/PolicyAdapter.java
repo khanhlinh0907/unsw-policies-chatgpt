@@ -11,11 +11,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHolder> implements Filterable {
     private List<Policy> mPolicies, mPoliciesFiltered;
     private PolicyRecyclerViewInterface mInterface;
+
+    public static final int SORT_METHOD_NAME = 1;
+    public static final int SORT_METHOD_NAME_REVERSE = 2;
 
     public PolicyAdapter(List<Policy> policies, PolicyRecyclerViewInterface policyInterface) {
         mPolicies = policies;
@@ -84,6 +89,25 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
                 }
             });
         }
+    }
+
+    // Use the Java Collections.sort() and Comparator methods to sort the list
+    public void sort(final int sortMethod) {
+        if (mPoliciesFiltered.size() > 0) {
+            Collections.sort(mPoliciesFiltered, new Comparator<Policy>() {
+                @Override
+                public int compare(Policy o1, Policy o2) {
+                    if (sortMethod == SORT_METHOD_NAME) {
+                        return o1.getName().compareTo(o2.getName());
+                    } else if (sortMethod == SORT_METHOD_NAME_REVERSE) {
+                        return o2.getName().compareTo(o1.getName());
+                    }
+                    // By default sort the list by coin name
+                    return o1.getName().compareTo(o2.getName());
+                }
+            });
+        }
+        notifyDataSetChanged();
     }
 }
 

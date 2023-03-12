@@ -84,9 +84,15 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
         policyList.add(new Policy("Assessment Design Procedure", "Assessments"));
         policyList.add(new Policy("Assessment Implementation Procedure", "Assessments"));
         policyList.add(new Policy("Assessment Policy", "Assessments"));
-        policyList.add(new Policy("Employment", "Assessments"));
-        policyList.add(new Policy("Finance", "Assessments"));
-        policyList.add(new Policy("Governance", "Assessments"));
+        policyList.add(new Policy("Employment", "Employment"));
+        policyList.add(new Policy("Engagement", "Engagement"));
+        policyList.add(new Policy("Facilities and IT", "Facilities and IT"));
+        policyList.add(new Policy("Finance and Procurement", "Finance and Procurement"));
+        policyList.add(new Policy("Governance and Mgmt", "Governance and Mgmt"));
+        policyList.add(new Policy("Health and Safety", "Health and Sasfety"));
+        policyList.add(new Policy("Research and Training", "Research and Training"));
+        policyList.add(new Policy("Student Mgmt Support", "Student Mgmt Support"));
+        policyList.add(new Policy("Teaching and Learning", "Teaching and Learning"));
     }
 
     @Override
@@ -116,5 +122,20 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
             }
         });
         return true;
+    }
+
+    @Override
+    // React to user interaction with the menu
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sortName:
+                adapter.sort(PolicyAdapter.SORT_METHOD_NAME);
+                return true;
+            case R.id.sortNameReverse:
+                adapter.sort(PolicyAdapter.SORT_METHOD_NAME_REVERSE);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

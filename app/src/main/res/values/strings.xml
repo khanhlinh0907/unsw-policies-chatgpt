@@ -13,6 +13,8 @@
     <string name="nav_chatbot">ChatBot</string>
     <string name="sort_1">Sort by Title</string>
     <string name="sort_2">Sort by Category</string>
+    <string name="action_sort_by_name" />
+
 
     <string-array name="policy_categories">
         <item>Any category</item>
