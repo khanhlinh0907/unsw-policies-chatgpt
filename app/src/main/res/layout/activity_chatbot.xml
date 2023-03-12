@@ -26,8 +26,12 @@
     <ListView
         android:id="@+id/chat_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/top_bar"
+        android:layout_height="557dp"
+        android:layout_above="@+id/input_layout"
+        android:layout_below="@+id/top_bar"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        android:background="#FFE600"
         android:divider="@null"
         android:dividerHeight="0dp"
         android:padding="16dp"
@@ -41,7 +45,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="16dp"
+        >
 
         <EditText
             android:id="@+id/input_message"
@@ -49,7 +54,9 @@
             android:layout_height="50dp"
             android:layout_weight="1"
             android:hint="Type your message"
-            android:inputType="text" />
+            android:inputType="text"
+            android:background="@drawable/policy_rv_list_item_style"
+            />
 
         <Button
             android:id="@+id/send_button"
@@ -57,7 +64,7 @@
             android:layout_height="wrap_content"
             android:text="Send"
             android:textColor="@android:color/white"
-            android:background="@color/purple_500" />
+            android:background="@drawable/policy_rv_list_item_style" />
 
     </LinearLayout>
 

@@ -89,7 +89,7 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
         policyList.add(new Policy("Facilities and IT", "Facilities and IT"));
         policyList.add(new Policy("Finance and Procurement", "Finance and Procurement"));
         policyList.add(new Policy("Governance and Mgmt", "Governance and Mgmt"));
-        policyList.add(new Policy("Health and Safety", "Health and Sasfety"));
+        policyList.add(new Policy("Health and Safety", "Health and Safety"));
         policyList.add(new Policy("Research and Training", "Research and Training"));
         policyList.add(new Policy("Student Mgmt Support", "Student Mgmt Support"));
         policyList.add(new Policy("Teaching and Learning", "Teaching and Learning"));
