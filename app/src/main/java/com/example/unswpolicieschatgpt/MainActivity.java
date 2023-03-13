@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                             for (URL url : urlList) {
                                 PDFTextExtractor textExtractor = new PDFTextExtractor();
                                 Document document = textExtractor.PDFTextExtractor(MainActivity.this, url);
-
+                                document.setPdf_url(url);
                                 documentDao.insert(document);
                             }
 
@@ -113,21 +113,15 @@ public class MainActivity extends AppCompatActivity {
                                 public void run() {
                                     TextView docTitle = findViewById(R.id.docTitle);
                                     TextView purpose = findViewById(R.id.purpose);
-                                    TextView scope = findViewById(R.id.scope);
-                                    TextView docContent = findViewById(R.id.docContent);
                                     TextView responsible_officer = findViewById(R.id.responsible_officer);
                                     TextView contact_officer = findViewById(R.id.contact_officer);
-                                    TextView parent_doc = findViewById(R.id.parentDoc);
 
 
                                     Document selectedDoc = documentList.get(0);
                                     docTitle.setText(selectedDoc.getTitle());
-                                    //purpose.setText(selectedDoc.getPurpose());
-                                    //scope.setText(selectedDoc.getScope());
-                                    //docContent.setText(selectedDoc.getContent());
+                                    purpose.setText(selectedDoc.getPurpose());
                                     responsible_officer.setText(selectedDoc.getResponsible_officer());
                                     contact_officer.setText(selectedDoc.getContact_officer());
-                                    parent_doc.setText(selectedDoc.getParent_doc());
                                 }
                             });
 

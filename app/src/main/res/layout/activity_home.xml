@@ -6,16 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/parentDoc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="37dp"
-        android:layout_marginBottom="47dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/responsible_officer"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <Button
         android:id="@+id/openPDF"
         android:layout_width="wrap_content"
@@ -41,48 +31,28 @@
         android:id="@+id/docTitle"
         android:layout_width="302dp"
         android:layout_height="43dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginBottom="536dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="144dp"
         android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintBottom_toTopOf="@+id/purpose"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/purpose"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="140dp"
-        android:layout_marginBottom="124dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="72dp"
         android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/scope"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="38dp"
-        android:layout_marginBottom="451dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/docContent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="38dp"
-        android:layout_marginBottom="83dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintBottom_toTopOf="@+id/responsible_officer"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/responsible_officer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginBottom="82dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginBottom="108dp"
         android:text="TextView"
         app:layout_constraintBottom_toTopOf="@+id/contact_officer"
         app:layout_constraintStart_toStartOf="parent" />
@@ -91,10 +61,10 @@
         android:id="@+id/contact_officer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="43dp"
-        android:layout_marginBottom="133dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="187dp"
         android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/docContent"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,22 +7,13 @@ import com.tom_roush.pdfbox.cos.COSArray;
 import com.tom_roush.pdfbox.cos.COSBase;
 import com.tom_roush.pdfbox.cos.COSDictionary;
 import com.tom_roush.pdfbox.cos.COSName;
-import com.tom_roush.pdfbox.cos.COSObject;
 import com.tom_roush.pdfbox.cos.COSStream;
 import com.tom_roush.pdfbox.pdmodel.PDDocument;
 import com.tom_roush.pdfbox.pdmodel.PDPage;
 import com.tom_roush.pdfbox.text.PDFTextStripper;
 
-/*import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;*/
-
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 
 public class PDFTextExtractor {
@@ -77,7 +68,9 @@ public class PDFTextExtractor {
             //Find title;
             //Note: Every PDF file page starts with a series of dash '-' so need to eliminate these
 
-            title = text.substring(96, text.indexOf("Page 1 of 6"));
+            title = text.substring(0, text.indexOf("Page 1 of"));
+            title = title.replace(String.valueOf('-'), "");
+            System.out.println("Title: " + title);
 
             /**
              * Find purpose, scope and content of the document
@@ -85,6 +78,7 @@ public class PDFTextExtractor {
             //Find purpose
             String purpose_key = "Purpose";
             purpose = text.substring(text.indexOf(purpose_key) + purpose_key.length(), text.indexOf("Scope"));
+            System.out.println("Purpose: " + purpose);
 
             //Find scope and content
             //Note: Every Procedure documents have an extra column local_doc_permit, Policy don't have
@@ -97,15 +91,21 @@ public class PDFTextExtractor {
                 //if the document is a policy
                 scope = text.substring(text.indexOf(scope_key) + scope_key.length(),
                         text.indexOf("Policy Provisions"));
+                System.out.println(scope);
                 content = text.substring(text.indexOf(policy_content_key) + policy_content_key.length(),
                         text.indexOf("Accountabilities"));
-            } else {
+            } else if (title.contains("Procedure")) {
                 scope = text.substring(text.indexOf(scope_key) + scope_key.length(),
                         text.indexOf("Are Local Documents"));
                 content = text.substring(
                         text.indexOf(procedure_content_key) + procedure_content_key.length(),
                         text.indexOf("Accountabilities"));
+            } else {
+                scope = null;
+                content = null;
             }
+            System.out.println("Scope: " + scope);
+            System.out.println("Content: " + content);
 
             /**
              * Find accountabilities
@@ -114,11 +114,13 @@ public class PDFTextExtractor {
             //Find responsible officer
             responsible_officer = text.substring(text.indexOf(res_officer_key) + res_officer_key.length(),
                     text.indexOf("Contact Officer"));
-
+            System.out.println("Responsible Officer " + responsible_officer);
             //Find contact officer
             String contact_officer_key = "Contact Officer";
             contact_officer = text.substring(text.indexOf(contact_officer_key) + contact_officer_key.length(),
                     text.indexOf("Supporting Information"));
+            System.out.println("Contact Officer " + contact_officer);
+
 
             /**
              * Find supporting information
