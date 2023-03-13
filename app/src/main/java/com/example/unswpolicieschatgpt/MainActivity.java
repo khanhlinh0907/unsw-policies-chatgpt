@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.unswpolicieschatgpt.database.Document;
+import com.example.unswpolicieschatgpt.database.DocumentDao;
+import com.example.unswpolicieschatgpt.database.DocumentDatabase;
 import com.example.unswpolicieschatgpt.database.PDFTextExtractor;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.view.View;
 
@@ -24,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNav;
@@ -96,7 +100,15 @@ public class MainActivity extends AppCompatActivity {
                             PDFBoxResourceLoader.init(getApplicationContext());
                             URL pdfURL = new URL("https://www.unsw.edu.au/content/dam/pdfs/governance/policy/2022-01-policies/assessmentdesignprocedure.pdf");
                             PDFTextExtractor textExtractor = new PDFTextExtractor();
-                            textExtractor.PDFTextExtractor(MainActivity.this, pdfURL);
+                            Document document = textExtractor.PDFTextExtractor(MainActivity.this, pdfURL);
+
+
+                            //Create DocumentDatabase
+                            DocumentDatabase database = Room.databaseBuilder(getApplicationContext(),
+                                    DocumentDatabase.class, "Document_Database").allowMainThreadQueries().build();
+                            DocumentDao documentDao = database.mainDao();
+
+                            documentDao.insert(document);
 
                             //Display text for testing
                             runOnUiThread(new Runnable() {
@@ -110,12 +122,14 @@ public class MainActivity extends AppCompatActivity {
                                     TextView contact_officer = findViewById(R.id.contact_officer);
                                     TextView parent_doc = findViewById(R.id.parentDoc);
 
+                                    List<Document> documentList = documentDao.getAll();
+
 
                                     //Test take data out of database
-                                    ArrayList<Document> documentList = new ArrayList<>();
+                                    /*ArrayList<Document> documentList = new ArrayList<>();
                                     final String DB_URL = "jdbc:mysql://localhost/documentdatabase";
-                                    Connection conn = null;
-                                    try {
+                                    Connection conn = null;*/
+                                    /*try {
                                         conn = DriverManager.getConnection(DB_URL);
                                         Statement st = conn.createStatement();
                                         String query = "SELECT * FROM DOCUMENT" ;
@@ -124,22 +138,23 @@ public class MainActivity extends AppCompatActivity {
                                             documentList.add(new Document(rs.getInt(1), rs.getString(2),
                                                     rs.getString(3), rs.getString(4), rs.getString(5),
                                                     rs.getString(6), rs.getString(7), rs.getString(8)));
-                                        }
+                                        }*/
+
                                         Document selectedDoc = documentList.get(0);
                                         docTitle.setText(selectedDoc.getTitle());
-                                        purpose.setText(selectedDoc.getPurpose());
-                                        scope.setText(selectedDoc.getScope());
-                                        docContent.setText(selectedDoc.getContent());
+                                        //purpose.setText(selectedDoc.getPurpose());
+                                        //scope.setText(selectedDoc.getScope());
+                                        //docContent.setText(selectedDoc.getContent());
                                         responsible_officer.setText(selectedDoc.getResponsible_officer());
                                         contact_officer.setText(selectedDoc.getContact_officer());
                                         parent_doc.setText(selectedDoc.getParent_doc());
 
-                                        rs.close();
-                                        st.close();
-
+                                      /*  rs.close();
+                                        st.close();*/
+/*
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
-                                    }
+                                    }*/
 
 
 
