@@ -66,16 +66,6 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-        /*
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        setSupportActionBar(binding.toolbar);
-
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        */
 
         openPDF = findViewById(R.id.openPDF);
 
@@ -98,19 +88,26 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         try {
                             PDFBoxResourceLoader.init(getApplicationContext());
-                            URL pdfURL = new URL("https://www.unsw.edu.au/content/dam/pdfs/governance/policy/2022-01-policies/assessmentdesignprocedure.pdf");
-                            PDFTextExtractor textExtractor = new PDFTextExtractor();
-                            Document document = textExtractor.PDFTextExtractor(MainActivity.this, pdfURL);
-
 
                             //Create DocumentDatabase
                             DocumentDatabase database = Room.databaseBuilder(getApplicationContext(),
                                     DocumentDatabase.class, "Document_Database").allowMainThreadQueries().build();
                             DocumentDao documentDao = database.mainDao();
+                            //Add documents to Room Database
+                            ArrayList<URL> urlList = database.insertURLList();
+                            for (URL url : urlList) {
+                                PDFTextExtractor textExtractor = new PDFTextExtractor();
+                                Document document = textExtractor.PDFTextExtractor(MainActivity.this, url);
 
-                            documentDao.insert(document);
+                                documentDao.insert(document);
+                            }
 
-                            //Display text for testing
+                            //Get all documents in the database
+                            List<Document> documentList = documentDao.getAll();
+
+                            /**
+                             * Test the DocumentDatabase
+                             */
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -122,46 +119,15 @@ public class MainActivity extends AppCompatActivity {
                                     TextView contact_officer = findViewById(R.id.contact_officer);
                                     TextView parent_doc = findViewById(R.id.parentDoc);
 
-                                    List<Document> documentList = documentDao.getAll();
 
-
-                                    //Test take data out of database
-                                    /*ArrayList<Document> documentList = new ArrayList<>();
-                                    final String DB_URL = "jdbc:mysql://localhost/documentdatabase";
-                                    Connection conn = null;*/
-                                    /*try {
-                                        conn = DriverManager.getConnection(DB_URL);
-                                        Statement st = conn.createStatement();
-                                        String query = "SELECT * FROM DOCUMENT" ;
-                                        ResultSet rs = st.executeQuery(query);
-                                        while (rs.next()) {
-                                            documentList.add(new Document(rs.getInt(1), rs.getString(2),
-                                                    rs.getString(3), rs.getString(4), rs.getString(5),
-                                                    rs.getString(6), rs.getString(7), rs.getString(8)));
-                                        }*/
-
-                                        Document selectedDoc = documentList.get(0);
-                                        docTitle.setText(selectedDoc.getTitle());
-                                        //purpose.setText(selectedDoc.getPurpose());
-                                        //scope.setText(selectedDoc.getScope());
-                                        //docContent.setText(selectedDoc.getContent());
-                                        responsible_officer.setText(selectedDoc.getResponsible_officer());
-                                        contact_officer.setText(selectedDoc.getContact_officer());
-                                        parent_doc.setText(selectedDoc.getParent_doc());
-
-                                      /*  rs.close();
-                                        st.close();*/
-/*
-                                    } catch (SQLException e) {
-                                        throw new RuntimeException(e);
-                                    }*/
-
-
-
-
-
-
-
+                                    Document selectedDoc = documentList.get(0);
+                                    docTitle.setText(selectedDoc.getTitle());
+                                    //purpose.setText(selectedDoc.getPurpose());
+                                    //scope.setText(selectedDoc.getScope());
+                                    //docContent.setText(selectedDoc.getContent());
+                                    responsible_officer.setText(selectedDoc.getResponsible_officer());
+                                    contact_officer.setText(selectedDoc.getContact_officer());
+                                    parent_doc.setText(selectedDoc.getParent_doc());
                                 }
                             });
 
@@ -174,12 +140,6 @@ public class MainActivity extends AppCompatActivity {
             }
             });
     }
-
-
-
-
-
-
         /*
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -26,9 +26,6 @@ import java.sql.Statement;
 
 
 public class PDFTextExtractor {
-    /*final String DB_URL = "jdbc:mysql://127.0.0.1:3306/documentdatabase";
-    // Define the schema of the table
-    final String TABLE_NAME = "DOCUMENT";*/
 
     public Document PDFTextExtractor(Context context, URL url) {
         PDFBoxResourceLoader.init(context);
@@ -69,7 +66,8 @@ public class PDFTextExtractor {
             PDFTextStripper pdfStripper = new PDFTextStripper();
             String text = pdfStripper.getText(pdfDocument);
 
-
+            //Close the PDF Document
+            pdfDocument.close();
 
             //setupDatabase();
             //insertDocument(text);
@@ -92,17 +90,20 @@ public class PDFTextExtractor {
             //Note: Every Procedure documents have an extra column local_doc_permit, Policy don't have
 
             String scope_key = "Scope";
+            String policy_content_key = "Policy Provisions";
+            String procedure_content_key = "Procedure Processes and Actions";
+
             if (title.contains("Policy")) {
                 //if the document is a policy
                 scope = text.substring(text.indexOf(scope_key) + scope_key.length(),
                         text.indexOf("Policy Provisions"));
-                content = text.substring(text.indexOf("Policy Provisions") + 1,
+                content = text.substring(text.indexOf(policy_content_key) + policy_content_key.length(),
                         text.indexOf("Accountabilities"));
             } else {
                 scope = text.substring(text.indexOf(scope_key) + scope_key.length(),
                         text.indexOf("Are Local Documents"));
                 content = text.substring(
-                        text.indexOf("Procedure Processes and Actions") + 1,
+                        text.indexOf(procedure_content_key) + procedure_content_key.length(),
                         text.indexOf("Accountabilities"));
             }
 
@@ -131,16 +132,13 @@ public class PDFTextExtractor {
                 parent_doc = null;
             }
 
-            Document newDocument = new Document(1, title, purpose, scope, content, responsible_officer, contact_officer, parent_doc);
+            Document newDocument = new Document(title, purpose, scope, content, responsible_officer, contact_officer, parent_doc);
             pdfDocument.close();
             return newDocument;
 
         } catch (IOException e) {
             e.printStackTrace();
-        /*} catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);*/
+
         } finally {
             if (pdfDocument != null) {
                 try {
@@ -154,66 +152,4 @@ public class PDFTextExtractor {
         return null;
     }
 
-
-    /*private void setupDatabase() throws ClassNotFoundException {
-     */
-
-    /**
-     * Create MySQL table to store database
-     *//*
-        //Connect to the database
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(DB_URL);
-            Statement st = conn.createStatement();
-            //Create the table of it does not exist
-            String createTableQuery = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
-                    + "id INTEGER PRIMARY KEY autoincrement, "
-                    + "title VARCHAR(255) NOT NULL, "
-                    + "URL  VARCHAR(255)) NOT NULL, "
-                    + "purpose VARCHAR(255)) NOT NULL, "
-                    + "scope VARCHAR(255)) NOT NULL, "
-                    + "content VARCHAR(255)) NOT NULL, "
-                    + "responsible_officer VARCHAR(255)) NOT NULL, "
-                    + "contact_officer VARCHAR(255)) NOT NULL, "
-                    + "parent_doc VARCHAR(255)), ";
-            st.executeUpdate(createTableQuery);
-
-            st.close();
-            conn.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-    }*/
-    private void insertDocument(String text) throws SQLException {
-
-
-
-
-        /*Connection conn = DriverManager.getConnection(DB_URL);
-        Statement st = conn.createStatement();
-        PreparedStatement pSt = conn.prepareStatement("INSERT OR IGNORE INTO " + TABLE_NAME
-                + "(id, title, purpose, scope, content, responsible_officer, contact_officer," +
-                "parent_doc)"
-                + "VALUES (?,?,?,?,?,?,?,?)"
-        );
-
-        *//**
-         * Insert data into database using PreparedStatement
-         *//*
-        pSt.setInt(1, 1);
-        pSt.setString(2, title);
-        pSt.setString(3, purpose);
-        pSt.setString(4, scope);
-        pSt.setString(5, content);
-        pSt.setString(6, responsible_officer);
-        pSt.setString(7, contact_officer);
-        pSt.setString(8, parent_doc);
-
-        st.close();
-        conn.close();
-    }*/
-    }
 }

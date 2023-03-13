@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey;
 @Entity
 public class Document {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private int id;
     @ColumnInfo(name = "pdf_url")
     private String pdf_url;
@@ -35,10 +35,8 @@ public class Document {
 
     }
 
-    public Document(int id,  String title, String purpose, String scope,
+    public Document(String title, String purpose, String scope,
                     String content, String contact_officer, String responsible_officer, String parent_doc) {
-        this.id = id;
-        //this.pdf_url = pdf_url;
         this.title = title;
         this.purpose = purpose;
         this.scope = scope;
