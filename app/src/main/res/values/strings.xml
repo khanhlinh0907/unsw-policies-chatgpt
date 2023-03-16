@@ -20,6 +20,7 @@
 
     <string-array name="policy_categories">
         <item>Any category</item>
+        <item>Assessments</item>
         <item>Employment</item>
         <item>Engagement</item>
         <item>Facilities and IT</item>
