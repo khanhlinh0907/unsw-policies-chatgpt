@@ -28,7 +28,7 @@
     </com.google.android.material.bottomnavigation.BottomNavigationView>
 
     <Spinner
-        android:id="@+id/spinner"
+        android:id="@+id/spinner_category"
         android:layout_width="168dp"
         android:layout_height="48dp"
         android:background="@drawable/policy_rv_list_item_style"

@@ -48,6 +48,42 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
         adapter = new PolicyAdapter(policyList, (PolicyRecyclerViewInterface) this);
         mRecyclerView.setAdapter(adapter);
 
+        // set up the policy category spinner
+        Spinner spinner = findViewById(R.id.spinner_category);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.policy_categories, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerAdapter);
+
+//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                String selectedCategory = adapterView.getItemAtPosition(i).toString();
+//                adapter.getFilter().filter(selectedCategory);
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//                adapter.getFilter().filter("");
+//            }
+//        });
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedCategory = adapterView.getItemAtPosition(i).toString();
+                if (selectedCategory.equals("All Categories")) {
+                    adapter.getFilter().filter("");
+                } else {
+                    adapter.getFilter().filter(selectedCategory);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                adapter.getFilter().filter("");
+            }
+        });
+
         //Bottom Navigation View
         bottomNav = findViewById(R.id.bottomNavigationView);
 
@@ -81,10 +117,12 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
 
     // Adding Dummy Data for Policy RecyclerView
     private void getData(){
-        policyList.add(new Policy("Assessment Design Procedure", "Assessments"));
-        policyList.add(new Policy("Assessment Implementation Procedure", "Assessments"));
-        policyList.add(new Policy("Assessment Policy", "Assessments"));
+//        policyList.add(new Policy("Assessment Design Procedure", "Assessments"));
+//        policyList.add(new Policy("Assessment Implementation Procedure", "Assessments"));
+//        policyList.add(new Policy("Assessment Policy", "Assessments"));
+
         policyList.add(new Policy("Employment", "Employment"));
+        policyList.add(new Policy("Employment Policy", "Employment"));
         policyList.add(new Policy("Engagement", "Engagement"));
         policyList.add(new Policy("Facilities and IT", "Facilities and IT"));
         policyList.add(new Policy("Finance and Procurement", "Finance and Procurement"));
@@ -93,6 +131,9 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
         policyList.add(new Policy("Research and Training", "Research and Training"));
         policyList.add(new Policy("Student Mgmt Support", "Student Mgmt Support"));
         policyList.add(new Policy("Teaching and Learning", "Teaching and Learning"));
+        policyList.add(new Policy("Assessments Design Procedure", "Assessments"));
+        policyList.add(new Policy("Assessments Policy", "Assessments"));
+        policyList.add(new Policy("Assessments Implementation Procedure", "Assessments"));
     }
 
     @Override

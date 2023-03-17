@@ -46,6 +46,7 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
         return mPoliciesFiltered.size();
     }
 
+    // getFilter method for search function
     @Override
     public Filter getFilter() {
         return new Filter() {
@@ -75,6 +76,45 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
             }
         };
     }
+
+    //Updated getFilter method for Spinner (includes search getFilter code)
+//    @Override
+//    public Filter getFilter() {
+//        return new Filter() {
+//            @Override
+//            protected FilterResults performFiltering(CharSequence charSequence) {
+//                String query = charSequence.toString();
+//                String selectedCategory = mSelectedCategory;
+//                List<Policy> filteredList = new ArrayList<>();
+//                if (selectedCategory.equalsIgnoreCase("All Categories")) {
+//                    // If "All Categories" is selected, show all policies that match the search query
+//                    for (Policy policy : mPolicies) {
+//                        if (policy.getName().toLowerCase().contains(query.toLowerCase())) {
+//                            filteredList.add(policy);
+//                        }
+//                    }
+//                } else {
+//                    // Otherwise, show policies that match both the search query and the selected category
+//                    for (Policy policy : mPolicies) {
+//                        if (policy.getName().toLowerCase().contains(query.toLowerCase())
+//                                && policy.getCategory().equalsIgnoreCase(selectedCategory)) {
+//                            filteredList.add(policy);
+//                        }
+//                    }
+//                }
+//                FilterResults filterResults = new FilterResults();
+//                filterResults.values = filteredList;
+//                return filterResults;
+//            }
+//
+//            @Override
+//            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+//                mPoliciesFiltered = (ArrayList<Policy>) filterResults.values;
+//                notifyDataSetChanged();
+//            }
+//        };
+//    }
+
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView mName;
