@@ -24,6 +24,9 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
 
     public PolicyAdapter(List<Policy> policies, PolicyRecyclerViewInterface policyInterface) {
         mPolicies = policies;
+        if (mPolicies == null) {
+            mPolicies = new ArrayList<>();
+        }
         mPoliciesFiltered = new ArrayList<>(policies);
         mInterface = policyInterface;
     }
@@ -43,8 +46,12 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
 
     @Override
     public int getItemCount() {
+        if (mPoliciesFiltered == null) {
+            return 0;
+        }
         return mPoliciesFiltered.size();
     }
+
 
     // getFilter method for search function
     @Override
@@ -52,13 +59,15 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
         return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence charSequence) {
-                String query = charSequence.toString();
+                //String query = charSequence.toString();
+                String query = charSequence != null ? charSequence.toString() : "";
                 if(query.isEmpty()) {
                     mPoliciesFiltered = mPolicies;
                 } else {
                     ArrayList<Policy> filteredList = new ArrayList<>();
                     for(Policy policy : mPolicies) {
-                        if(policy.getName().contains(query)) {
+                        String name = policy.getName();
+                        if(name != null && name.contains(query)) {
                             filteredList.add(policy);
                         }
                     }
@@ -76,6 +85,7 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
             }
         };
     }
+
 
     //Updated getFilter method for Spinner (includes search getFilter code)
 //    @Override

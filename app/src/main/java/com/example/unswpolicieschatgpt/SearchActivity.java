@@ -71,11 +71,17 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String selectedCategory = adapterView.getItemAtPosition(i).toString();
-                if (selectedCategory.equals("All Categories")) {
-                    adapter.getFilter().filter("");
+//                if (selectedCategory.equals("All Categories")) {
+//                    adapter.getFilter().filter("");
+//                } else {
+//                    adapter.getFilter().filter(selectedCategory);
+//                }
+                if (selectedCategory.equals("Any category")) {
+                    adapter.getFilter().filter(null);
                 } else {
                     adapter.getFilter().filter(selectedCategory);
                 }
+
             }
 
             @Override
