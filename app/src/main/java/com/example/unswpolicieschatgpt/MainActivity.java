@@ -3,9 +3,9 @@ package com.example.unswpolicieschatgpt;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.example.unswpolicieschatgpt.database.Document;
-import com.example.unswpolicieschatgpt.database.DocumentDao;
-import com.example.unswpolicieschatgpt.database.DocumentDatabase;
+import com.example.unswpolicieschatgpt.database.Policy;
+import com.example.unswpolicieschatgpt.database.PolicyDao;
+import com.example.unswpolicieschatgpt.database.PolicyDatabase;
 import com.example.unswpolicieschatgpt.database.PDFTextExtractor;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader;
@@ -21,11 +21,6 @@ import android.widget.TextView;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,20 +85,20 @@ public class MainActivity extends AppCompatActivity {
                             PDFBoxResourceLoader.init(getApplicationContext());
 
                             //Create DocumentDatabase
-                            DocumentDatabase database = Room.databaseBuilder(getApplicationContext(),
-                                    DocumentDatabase.class, "Document_Database").allowMainThreadQueries().build();
-                            DocumentDao documentDao = database.mainDao();
+                            PolicyDatabase database = Room.databaseBuilder(getApplicationContext(),
+                                    PolicyDatabase.class, "Document_Database").allowMainThreadQueries().build();
+                            PolicyDao policyDao = database.mainDao();
                             //Add documents to Room Database
                             ArrayList<URL> urlList = database.insertURLList();
                             for (URL url : urlList) {
                                 PDFTextExtractor textExtractor = new PDFTextExtractor();
-                                Document document = textExtractor.PDFTextExtractor(MainActivity.this, url);
-                                document.setPdf_url(url);
-                                documentDao.insert(document);
+                                Policy policy = textExtractor.PDFTextExtractor(MainActivity.this, url);
+                                policy.setPdf_url(url);
+                                policyDao.insert(policy);
                             }
 
                             //Get all documents in the database
-                            List<Document> documentList = documentDao.getAll();
+                            List<Policy> policyList = policyDao.getAll();
 
                             /**
                              * Test the DocumentDatabase
@@ -117,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                                     TextView contact_officer = findViewById(R.id.contact_officer);
 
 
-                                    Document selectedDoc = documentList.get(0);
+                                    Policy selectedDoc = policyList.get(0);
                                     docTitle.setText(selectedDoc.getTitle());
                                     //purpose.setText(selectedDoc.getPurpose());
                                     responsible_officer.setText(selectedDoc.getResponsible_officer());

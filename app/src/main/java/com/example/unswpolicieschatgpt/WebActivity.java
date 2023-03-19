@@ -11,6 +11,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public class WebActivity extends AppCompatActivity {
+    public static final String INTENT_MESSAGE = "intent_message";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -7,24 +7,25 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Dao
-public interface DocumentDao {
+public interface PolicyDao {
     //Insert query
     @Insert(onConflict = REPLACE)
-    void insert(Document document);
+    void insert(Policy policy);
 
     //Delete query
     @Delete
-    void delete(Document document);
+    void delete(Policy policy);
 
     //Delete all query
     @Delete
-    void reset(List<Document> document);
+    void reset(List<Policy> policy);
 
     //Update query
-    @Query("UPDATE Document " +
+    @Query("UPDATE Policy " +
             "SET pdf_url = :sPdf_url, title = :sTitle, purpose = :sPurpose, scope = :sScope, " +
             "local_doc_permit = :sLocal_doc_permit, content = :sContent, parent_doc = :sParent_doc, " +
             "contact_officer = :sContact_officer, responsible_officer = :sResponsible_officer " +
@@ -34,7 +35,7 @@ public interface DocumentDao {
                 int sID);
 
     //Get all data query
-    @Query("SELECT * FROM Document")
-    List<Document> getAll();
+    @Query("SELECT * FROM Policy")
+    ArrayList<Policy> getAll();
 }
 

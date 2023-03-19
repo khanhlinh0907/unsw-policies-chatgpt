@@ -18,7 +18,7 @@ import java.net.URL;
 
 public class PDFTextExtractor {
 
-    public Document PDFTextExtractor(Context context, URL url) {
+    public Policy PDFTextExtractor(Context context, URL url) {
         PDFBoxResourceLoader.init(context);
         PDDocument pdfDocument = new PDDocument();
         try {
@@ -134,9 +134,9 @@ public class PDFTextExtractor {
                 parent_doc = null;
             }
 
-            Document newDocument = new Document(title, purpose, scope, content, responsible_officer, contact_officer, parent_doc);
+            Policy newPolicy = new Policy(title, purpose, scope, content, responsible_officer, contact_officer, parent_doc);
             pdfDocument.close();
-            return newDocument;
+            return newPolicy;
 
         } catch (IOException e) {
             e.printStackTrace();
