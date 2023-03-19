@@ -112,14 +112,14 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     TextView docTitle = findViewById(R.id.docTitle);
-                                    TextView purpose = findViewById(R.id.purpose);
+                                    //TextView purpose = findViewById(R.id.purpose);
                                     TextView responsible_officer = findViewById(R.id.responsible_officer);
                                     TextView contact_officer = findViewById(R.id.contact_officer);
 
 
                                     Document selectedDoc = documentList.get(0);
                                     docTitle.setText(selectedDoc.getTitle());
-                                    purpose.setText(selectedDoc.getPurpose());
+                                    //purpose.setText(selectedDoc.getPurpose());
                                     responsible_officer.setText(selectedDoc.getResponsible_officer());
                                     contact_officer.setText(selectedDoc.getContact_officer());
                                 }

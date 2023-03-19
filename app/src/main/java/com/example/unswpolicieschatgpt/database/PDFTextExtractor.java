@@ -68,8 +68,8 @@ public class PDFTextExtractor {
             //Find title;
             //Note: Every PDF file page starts with a series of dash '-' so need to eliminate these
 
-            title = text.substring(0, text.indexOf("Page 1 of"));
-            title = title.replace(String.valueOf('-'), "");
+            String titleString = text.substring(0, text.indexOf("Page 1 of"));
+            title = titleString.replace(String.valueOf('-'), "");
             System.out.println("Title: " + title);
 
             /**

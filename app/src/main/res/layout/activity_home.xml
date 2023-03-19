@@ -29,23 +29,12 @@
 
     <TextView
         android:id="@+id/docTitle"
-        android:layout_width="302dp"
-        android:layout_height="43dp"
+        android:layout_width="301dp"
+        android:layout_height="101dp"
         android:layout_marginStart="40dp"
-        android:layout_marginBottom="144dp"
         android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/purpose"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/purpose"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginBottom="72dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/responsible_officer"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="69dp" />
 
     <TextView
         android:id="@+id/responsible_officer"
