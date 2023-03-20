@@ -25,7 +25,7 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
     public static final int SORT_METHOD_NAME_REVERSE = 2;
 
     //PolicyAdapter constructor method
-    public PolicyAdapter(ArrayList<Policy> policies, PolicyRecyclerViewInterface policyInterface) {
+    public PolicyAdapter(List<Policy> policies, PolicyRecyclerViewInterface policyInterface) {
         mPolicies = policies;
         /*if (mPolicies == null) {
             mPolicies = new ArrayList<>();
@@ -53,9 +53,9 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
      */
     @Override
     public int getItemCount() {
-        /*if (mPoliciesFiltered == null) {
+        if (mPoliciesFiltered == null) {
             return 0;
-        }*/
+        }
         return mPoliciesFiltered.size();
     }
 
@@ -69,8 +69,8 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
             @Override
             protected FilterResults performFiltering(CharSequence charSequence) {
                 //Convert user input into string
-                String query = charSequence.toString();
-                //String query = charSequence != null ? charSequence.toString() : "";
+
+                String query = charSequence != null ? charSequence.toString() : "";
 
                 //Check user query
                 if(query.isEmpty()) {

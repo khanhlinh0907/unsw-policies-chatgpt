@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-         */
+        /*
         openPDF.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,9 +100,9 @@ public class MainActivity extends AppCompatActivity {
                             //Get all documents in the database
                             List<Policy> policyList = policyDao.getAll();
 
-                            /**
-                             * Test the DocumentDatabase
-                             */
+
+                            //Test the DocumentDatabase
+
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -129,7 +129,9 @@ public class MainActivity extends AppCompatActivity {
             }
             });
     }
-        /*
+
+
+
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -140,3 +142,4 @@ public class MainActivity extends AppCompatActivity {
 
          */
     }
+}

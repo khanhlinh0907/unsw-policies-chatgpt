@@ -11,27 +11,28 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import com.example.unswpolicieschatgpt.database.PDFTextExtractor;
 import com.example.unswpolicieschatgpt.database.Policy;
-import com.example.unswpolicieschatgpt.database.PolicyDao;
 import com.example.unswpolicieschatgpt.database.PolicyDatabase;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SearchActivity extends AppCompatActivity implements PolicyRecyclerViewInterface {
     private static final String TAG = "SearchActivity";
     BottomNavigationView bottomNav;
     // RecyclerView
     private RecyclerView mRecyclerView;
-    private ArrayList<Policy> policyList = new ArrayList<>();
+    private List<Policy> policyList;
     private PolicyAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
@@ -48,19 +49,35 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
 
-        //Create an Adapter instance with an empty ArrayList of Policy objects
+        /**
+         * Setup database
+         */
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                PolicyDatabase policyDatabase = Room.databaseBuilder(SearchActivity.this,
+                        PolicyDatabase.class, "Policy_Database").allowMainThreadQueries().build();
+                PDFTextExtractor textExtractor = new PDFTextExtractor(SearchActivity.this);
+
+
+                try {
+                    ArrayList<URL> urlList = policyDatabase.getURLList();
+                    for (URL pdf_url: urlList) {
+                        //Add all policies into PolicyDatabase
+                        textExtractor.PDFTextExtractor(pdf_url);
+                    }
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException(e);
+                }
+
+                policyList = policyDatabase.mainDao().getAll();
+                System.out.print("Test policy list:" + policyList);
+            }
+        }).start();
+
+        //Create an Adapter instance with an ArrayList of Policy objects
         adapter = new PolicyAdapter(policyList, this);
         mRecyclerView.setAdapter(adapter);
-
-        //Get database
-        PolicyDatabase database = Room.databaseBuilder(getApplicationContext(),
-                PolicyDatabase.class, "Policy_Database").allowMainThreadQueries().build();
-        PolicyDao policyDao = database.mainDao();
-        try {
-            policyList = database.getDatabase(this);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
 
         /**
          * Set up the policy category spinner

@@ -7,6 +7,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,10 @@ public interface PolicyDao {
 
     //Get all data query
     @Query("SELECT * FROM Policy")
-    ArrayList<Policy> getAll();
+    List<Policy> getAll();
+
+    //Get policy url by title
+    @Query("SELECT pdf_url FROM Policy WHERE title = :sTitle")
+    URL getPolicyURLByTitle(String sTitle);
 }
 
