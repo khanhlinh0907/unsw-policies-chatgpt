@@ -50,39 +50,6 @@ public class PDFTextExtractor {
 
                     //Return the extracted test
                     return text;
-                    /**
-                     * Remove footer
-                     *//*
-                    for (int i = 0; i < pdfDocument.getNumberOfPages(); i++) {
-                        PDPage page = pdfDocument.getPage(i);
-                        COSDictionary dictionary = page.getCOSObject();
-                        COSBase contents = dictionary.getDictionaryObject(COSName.CONTENTS);
-
-                        if (contents instanceof COSArray) {
-                            COSArray cosArray = (COSArray) contents;
-                            for (int j = 0; j < cosArray.size(); j++) {
-                                COSBase object = cosArray.getObject(j);
-                                if (object instanceof COSStream) {
-                                    COSStream cosStream = (COSStream) object;
-                                    String content = cosStream.getString();
-                                    if (content != null) {
-                                        content = content.replaceAll("FooterText", ""); // Update the modified content.
-                                        cosStream.setString(COSName.CONTENTS, content);
-                                    }
-                                }
-                            }
-                        } else if (contents instanceof COSStream) {
-                            COSStream cosStream = (COSStream) contents;
-                            String content = cosStream.getString();
-                            if (content != null) {
-                                content = content.replaceAll("FooterText", ""); // Update the modified content.
-                                cosStream.setString(COSName.CONTENTS, content);
-                            }
-                        }
-                    }
-*/
-
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

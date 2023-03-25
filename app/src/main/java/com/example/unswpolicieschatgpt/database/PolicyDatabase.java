@@ -8,6 +8,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
 import com.example.unswpolicieschatgpt.MainActivity;
+import com.example.unswpolicieschatgpt.SearchActivity;
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader;
 import com.tom_roush.pdfbox.cos.COSArray;
 import com.tom_roush.pdfbox.cos.COSBase;
@@ -19,6 +20,7 @@ import com.tom_roush.pdfbox.pdmodel.PDPage;
 import com.tom_roush.pdfbox.text.PDFTextStripper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import java.util.List;
 //Add database entities
 @Database(entities = {Policy.class}, version = 1, exportSchema = false)
 @TypeConverters({Converters.class})
+
 public abstract class PolicyDatabase extends RoomDatabase {
     //Define database name
     private static final String DATABASE_NAME = "Document_Database";
@@ -35,7 +38,6 @@ public abstract class PolicyDatabase extends RoomDatabase {
 
     //Create Dao
     public abstract PolicyDao mainDao();
-
 
     public ArrayList<URL> getURLList() throws MalformedURLException {
         ArrayList<URL> urlList = new ArrayList<>();
@@ -46,6 +48,31 @@ public abstract class PolicyDatabase extends RoomDatabase {
         urlList.add(new URL("https://www.unsw.edu.au/content/dam/pdfs/governance/policy/2022-01-policies/enrolmentwithdrawalprocedure.pdf"));
         urlList.add(new URL("https://www.unsw.edu.au/content/dam/pdfs/governance/policy/2022-01-policies/rplprocedure.pdf"));
         return urlList;
+    }
+
+    public String loadPDF(URL pdf_url, Context context) {
+        PDFBoxResourceLoader.init(context);
+
+        PDDocument pdfDocument = new PDDocument();
+        try {
+            //Load PDF document from URL
+            InputStream inputStream = pdf_url.openStream();
+            pdfDocument = PDDocument.load(inputStream);
+
+            //Extract text from PDF document using PDFTextStripper
+            PDFTextStripper pdfStripper = new PDFTextStripper();
+            String text = pdfStripper.getText(pdfDocument);
+
+            //Close the PDF Document
+            pdfDocument.close();
+
+            //Return the extracted test
+            return text;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public Policy getPolicyFromPDF(String text) {
@@ -123,5 +150,20 @@ public abstract class PolicyDatabase extends RoomDatabase {
         Policy newPolicy = new Policy(title, purpose, scope, content, responsible_officer, contact_officer, parent_doc);
 
         return newPolicy;
+    }
+
+    public void setupDatabase(Context context) throws MalformedURLException {
+        //Create database instance
+        PolicyDatabase database = Room.databaseBuilder(context,
+                PolicyDatabase.class, "Policy_Database").build();
+        ArrayList<URL> urlList = database.getURLList();
+        for (URL url: urlList) {
+            //Load PDF into text
+            String pdfText = database.loadPDF(url, context);
+            //Create new Policy from text
+            Policy newPolicy = database.getPolicyFromPDF(pdfText);
+            //Add new policy to Room Database
+            database.mainDao().insert(newPolicy);
+        }
     }
 }

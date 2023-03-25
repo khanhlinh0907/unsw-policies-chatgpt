@@ -19,6 +19,7 @@ import androidx.room.Room;
 
 import com.example.unswpolicieschatgpt.database.PDFTextExtractor;
 import com.example.unswpolicieschatgpt.database.Policy;
+import com.example.unswpolicieschatgpt.database.PolicyDao;
 import com.example.unswpolicieschatgpt.database.PolicyDatabase;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -32,7 +33,7 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
     BottomNavigationView bottomNav;
     // RecyclerView
     private RecyclerView mRecyclerView;
-    private List<Policy> policyList;
+    private List<Policy> policyList = new ArrayList<>();
     private PolicyAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
@@ -49,6 +50,10 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
 
+        adapter = new PolicyAdapter(policyList, this);
+        //Create an Adapter instance with an ArrayList of Policy objects
+        mRecyclerView.setAdapter(adapter);
+
         /**
          * Setup database
          */
@@ -56,28 +61,31 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
             @Override
             public void run() {
                 PolicyDatabase policyDatabase = Room.databaseBuilder(SearchActivity.this,
-                        PolicyDatabase.class, "Policy_Database").allowMainThreadQueries().build();
-                PDFTextExtractor textExtractor = new PDFTextExtractor(SearchActivity.this);
-
-
+                        PolicyDatabase.class, "Policy_Database").build();
+                PolicyDao mainDao = policyDatabase.mainDao();
                 try {
-                    ArrayList<URL> urlList = policyDatabase.getURLList();
-                    for (URL pdf_url: urlList) {
-                        //Add all policies into PolicyDatabase
-                        textExtractor.PDFTextExtractor(pdf_url);
-                    }
+                    policyDatabase.setupDatabase(SearchActivity.this);
+                    List<Policy> retrievedPolicyList = mainDao.getAll();
+                    policyList.clear();
+                    policyList.addAll(retrievedPolicyList);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter = new PolicyAdapter(policyList, SearchActivity.this);
+                            mRecyclerView.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
                 } catch (MalformedURLException e) {
                     throw new RuntimeException(e);
                 }
 
-                policyList = policyDatabase.mainDao().getAll();
-                System.out.print("Test policy list:" + policyList);
             }
         }).start();
 
-        //Create an Adapter instance with an ArrayList of Policy objects
-        adapter = new PolicyAdapter(policyList, this);
-        mRecyclerView.setAdapter(adapter);
+
+
+
 
         /**
          * Set up the policy category spinner

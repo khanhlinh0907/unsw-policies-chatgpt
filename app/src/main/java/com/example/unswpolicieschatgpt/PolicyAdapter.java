@@ -26,10 +26,9 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
 
     //PolicyAdapter constructor method
     public PolicyAdapter(List<Policy> policies, PolicyRecyclerViewInterface policyInterface) {
-        mPolicies = policies;
-        /*if (mPolicies == null) {
+        if (mPolicies == null) {
             mPolicies = new ArrayList<>();
-        }*/
+        }
         mPoliciesFiltered = policies;
         mInterface = policyInterface;
     }
