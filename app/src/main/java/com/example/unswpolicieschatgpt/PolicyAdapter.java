@@ -1,5 +1,8 @@
 package com.example.unswpolicieschatgpt;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.unswpolicieschatgpt.database.Policy;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,7 +48,12 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         //Assign value to each row in RecyclerView based on position of RecyclerView item
         Policy policy = mPoliciesFiltered.get(position);
+        System.out.println("Position: " + position);
         holder.mTitle.setText(policy.getTitle());
+        holder.itemView.setTag(policy.getPdf_url());
+        Log.d("TAG", "Url for item " + position + " is " + policy.getPdf_url());
+        Log.d("TAG", "Title for item " + position + " is " + policy.getTitle());
+
     }
 
     /**
@@ -148,7 +157,7 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
                 @Override
                 public void onClick(View view) {
                     if (mInterface != null) {
-                        mInterface.onPolicyClick((String) itemView.getTag());
+                        mInterface.onPolicyClick((URL) itemView.getTag());
                     }
 
                 }

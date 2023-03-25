@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
-import com.example.unswpolicieschatgpt.database.PDFTextExtractor;
 import com.example.unswpolicieschatgpt.database.Policy;
 import com.example.unswpolicieschatgpt.database.PolicyDao;
 import com.example.unswpolicieschatgpt.database.PolicyDatabase;
@@ -74,6 +73,7 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
                             adapter = new PolicyAdapter(policyList, SearchActivity.this);
                             mRecyclerView.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
+                            policyDatabase.close();
                         }
                     });
                 } catch (MalformedURLException e) {
@@ -161,19 +161,23 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
     }
 
     @Override
-    public void onPolicyClick(String title) {
-        launchWebActivity(title);
+    public void onPolicyClick(URL url) {
+        // Retrieve the selected policy from the database using its ID
+        Log.d("SearchActivity", "onPolicyClick: url = " + url);
+        Intent intent = new Intent(SearchActivity.this, WebActivity.class);
+        intent.putExtra(WebActivity.INTENT_MESSAGE, url);
+        startActivity(intent);
     }
 
     /**
      * Load PDF file to WebActivity when user taps into policy title
-     * @param title
+     * @param
      */
-    private void launchWebActivity(String title) {
+    /*private void launchWebActivity(String policyId) {
         Intent intent = new Intent(SearchActivity.this, WebActivity.class);
-        intent.putExtra(WebActivity.INTENT_MESSAGE, title);
+        intent.putExtra(WebActivity.INTENT_MESSAGE, policyId);
         startActivity(intent);
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

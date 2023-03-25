@@ -3,26 +3,12 @@ package com.example.unswpolicieschatgpt;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.example.unswpolicieschatgpt.database.Policy;
-import com.example.unswpolicieschatgpt.database.PolicyDao;
-import com.example.unswpolicieschatgpt.database.PolicyDatabase;
-import com.example.unswpolicieschatgpt.database.PDFTextExtractor;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.tom_roush.pdfbox.android.PDFBoxResourceLoader;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
-
-import android.view.View;
 
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.TextView;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNav;

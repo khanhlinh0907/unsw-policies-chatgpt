@@ -1,34 +1,20 @@
 package com.example.unswpolicieschatgpt;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.example.unswpolicieschatgpt.database.PDFTextExtractor;
-import com.example.unswpolicieschatgpt.database.Policy;
-import com.example.unswpolicieschatgpt.database.PolicyDao;
-import com.example.unswpolicieschatgpt.database.PolicyDatabase;
-import com.tom_roush.pdfbox.android.PDFBoxResourceLoader;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
 public class WebActivity extends AppCompatActivity {
     public static final String INTENT_MESSAGE = "intent_message";
     private static final String TAG = "WebActivity";
-    String policyTitle;
-    URL policy_url;
+    String policy_url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,23 +27,11 @@ public class WebActivity extends AppCompatActivity {
          */
         Intent intent = getIntent();
         if (intent.hasExtra(INTENT_MESSAGE)) {
-            policyTitle = intent.getStringExtra(INTENT_MESSAGE);
-            Log.d(TAG, "Intent Message = " + policyTitle);
+            // Get the URL from the intent sent from SearchActivity
+            policy_url = intent.getStringExtra(INTENT_MESSAGE);
+            System.out.println(policy_url);
+
         }
-
-        /**
-         * Setup database
-         */
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                PolicyDatabase policyDatabase = Room.databaseBuilder(WebActivity.this,
-                        PolicyDatabase.class, "Policy_Database").allowMainThreadQueries().build();
-                PolicyDao policyDao = policyDatabase.mainDao();
-                policy_url = policyDao.getPolicyURLByTitle(policyTitle);
-            }
-        }).start();
-
 
         /**
          * Setup ProgressDialog while loading the document
