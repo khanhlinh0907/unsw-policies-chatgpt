@@ -165,7 +165,9 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
         // Retrieve the selected policy from the database using its ID
         Log.d("SearchActivity", "onPolicyClick: url = " + url);
         Intent intent = new Intent(SearchActivity.this, WebActivity.class);
-        intent.putExtra(WebActivity.INTENT_MESSAGE, url);
+
+        //Changed URL to String to allow it ot be passed to the Intent. Resolve issue - does WebView require URl object or URL as a String?
+        intent.putExtra(WebActivity.INTENT_MESSAGE, url.toString());
         startActivity(intent);
     }
 

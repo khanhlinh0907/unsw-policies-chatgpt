@@ -11,9 +11,12 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import java.net.URL;
+
 public class WebActivity extends AppCompatActivity {
     public static final String INTENT_MESSAGE = "intent_message";
     private static final String TAG = "WebActivity";
+
     String policy_url;
 
     @Override
@@ -29,7 +32,7 @@ public class WebActivity extends AppCompatActivity {
         if (intent.hasExtra(INTENT_MESSAGE)) {
             // Get the URL from the intent sent from SearchActivity
             policy_url = intent.getStringExtra(INTENT_MESSAGE);
-            System.out.println(policy_url);
+            System.out.println("WebActivity: onCreate: url = " + policy_url);
 
         }
 
@@ -49,7 +52,9 @@ public class WebActivity extends AppCompatActivity {
         webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDisplayZoomControls(true);
-        webView.loadUrl(String.valueOf(policy_url));
+
+        //docs.google.com added to start of URL. Based off of previous iteration of Open PDF.
+        webView.loadUrl("https://docs.google.com/gview?embedded=true&url=" + policy_url);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
