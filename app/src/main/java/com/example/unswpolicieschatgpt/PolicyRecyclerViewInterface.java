@@ -1,5 +1,7 @@
 package com.example.unswpolicieschatgpt;
 
+import java.net.URL;
+
 public interface PolicyRecyclerViewInterface {
-    void onPolicyClick(int position);
+    void onPolicyClick(URL title);
 }

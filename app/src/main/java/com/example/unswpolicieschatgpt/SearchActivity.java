@@ -9,46 +9,88 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
+import com.example.unswpolicieschatgpt.database.Policy;
+import com.example.unswpolicieschatgpt.database.PolicyDao;
+import com.example.unswpolicieschatgpt.database.PolicyDatabase;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchActivity extends AppCompatActivity implements PolicyRecyclerViewInterface {
+    private static final String TAG = "SearchActivity";
     BottomNavigationView bottomNav;
-
-    //TAG
-    static final String TAG = "MainActivity";
-
     // RecyclerView
-    RecyclerView mRecyclerView;
+    private RecyclerView mRecyclerView;
     private List<Policy> policyList = new ArrayList<>();
     private PolicyAdapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        setTitle("Browse UNSW Policy");
 
-        // RecyclerView
+        //Get the handle to RecyclerView
         mRecyclerView = findViewById(R.id.rvList);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+
+        //Instantiate a Linear RecyclerView Layout Manager
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
 
-        getData();
-        adapter = new PolicyAdapter(policyList, (PolicyRecyclerViewInterface) this);
+        adapter = new PolicyAdapter(policyList, this);
+        //Create an Adapter instance with an ArrayList of Policy objects
         mRecyclerView.setAdapter(adapter);
 
-        // set up the policy category spinner
+        /**
+         * Setup database
+         */
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                PolicyDatabase policyDatabase = Room.databaseBuilder(SearchActivity.this,
+                        PolicyDatabase.class, "Policy_Database").build();
+                PolicyDao mainDao = policyDatabase.mainDao();
+                try {
+                    policyDatabase.setupDatabase(SearchActivity.this);
+                    List<Policy> retrievedPolicyList = mainDao.getAll();
+                    policyList.clear();
+                    policyList.addAll(retrievedPolicyList);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter = new PolicyAdapter(policyList, SearchActivity.this);
+                            mRecyclerView.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                            policyDatabase.close();
+                        }
+                    });
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+        }).start();
+
+
+
+
+
+        /**
+         * Set up the policy category spinner
+         */
+
         Spinner spinner = findViewById(R.id.spinner_category);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.policy_categories, android.R.layout.simple_spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -90,12 +132,10 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
             }
         });
 
-        //Bottom Navigation View
-        bottomNav = findViewById(R.id.bottomNavigationView);
-
         /**
          * Set up Bottom Navigation View
          */
+        bottomNav = findViewById(R.id.bottomNavigationView);
         bottomNav.setSelectedItemId(R.id.search);
 
         //Perform item selected listener
@@ -118,35 +158,28 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
                 return false;
             }
         });
-
-    }
-
-    // Adding Dummy Data for Policy RecyclerView
-    private void getData(){
-//        policyList.add(new Policy("Assessment Design Procedure", "Assessments"));
-//        policyList.add(new Policy("Assessment Implementation Procedure", "Assessments"));
-//        policyList.add(new Policy("Assessment Policy", "Assessments"));
-
-        policyList.add(new Policy("Employment", "Employment"));
-        policyList.add(new Policy("Employment Policy", "Employment"));
-        policyList.add(new Policy("Engagement", "Engagement"));
-        policyList.add(new Policy("Facilities and IT", "Facilities and IT"));
-        policyList.add(new Policy("Finance and Procurement", "Finance and Procurement"));
-        policyList.add(new Policy("Governance and Mgmt", "Governance and Mgmt"));
-        policyList.add(new Policy("Health and Safety", "Health and Safety"));
-        policyList.add(new Policy("Research and Training", "Research and Training"));
-        policyList.add(new Policy("Student Mgmt Support", "Student Mgmt Support"));
-        policyList.add(new Policy("Teaching and Learning", "Teaching and Learning"));
-        policyList.add(new Policy("Assessments Design Procedure", "Assessments"));
-        policyList.add(new Policy("Assessments Policy", "Assessments"));
-        policyList.add(new Policy("Assessments Implementation Procedure", "Assessments"));
     }
 
     @Override
-    public void onPolicyClick(int position) {
-        Policy policy = policyList.get(position);
-        Toast.makeText(this, policy.getName(), Toast.LENGTH_SHORT).show();
+    public void onPolicyClick(URL url) {
+        // Retrieve the selected policy from the database using its ID
+        Log.d("SearchActivity", "onPolicyClick: url = " + url);
+        Intent intent = new Intent(SearchActivity.this, WebActivity.class);
+
+        //Changed URL to String to allow it ot be passed to the Intent. Resolve issue - does WebView require URl object or URL as a String?
+        intent.putExtra(WebActivity.INTENT_MESSAGE, url.toString());
+        startActivity(intent);
     }
+
+    /**
+     * Load PDF file to WebActivity when user taps into policy title
+     * @param
+     */
+    /*private void launchWebActivity(String policyId) {
+        Intent intent = new Intent(SearchActivity.this, WebActivity.class);
+        intent.putExtra(WebActivity.INTENT_MESSAGE, policyId);
+        startActivity(intent);
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -184,5 +217,10 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+        super.onPointerCaptureChanged(hasCapture);
     }
 }

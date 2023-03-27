@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey;
 import java.net.URL;
 
 @Entity
-public class Document {
+public class Policy {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -33,12 +33,12 @@ public class Document {
     private String responsible_officer;
 
     // Constructors
-    public Document() {
+    public Policy() {
 
     }
 
-    public Document(String title, String purpose, String scope,
-                    String content, String contact_officer, String responsible_officer, String parent_doc) {
+    public Policy(String title, String purpose, String scope,
+                  String content, String contact_officer, String responsible_officer, String parent_doc) {
         this.title = title;
         this.purpose = purpose;
         this.scope = scope;

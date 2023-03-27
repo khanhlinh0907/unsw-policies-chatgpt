@@ -1,5 +1,8 @@
 package com.example.unswpolicieschatgpt;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +13,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.unswpolicieschatgpt.database.Policy;
+
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,12 +28,12 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
     public static final int SORT_METHOD_NAME = 1;
     public static final int SORT_METHOD_NAME_REVERSE = 2;
 
+    //PolicyAdapter constructor method
     public PolicyAdapter(List<Policy> policies, PolicyRecyclerViewInterface policyInterface) {
-        mPolicies = policies;
         if (mPolicies == null) {
             mPolicies = new ArrayList<>();
         }
-        mPoliciesFiltered = new ArrayList<>(policies);
+        mPoliciesFiltered = policies;
         mInterface = policyInterface;
     }
 
@@ -39,11 +45,20 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PolicyAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        //Assign value to each row in RecyclerView based on position of RecyclerView item
         Policy policy = mPoliciesFiltered.get(position);
-        holder.mName.setText(policy.getName());
+        System.out.println("Position: " + position);
+        holder.mTitle.setText(policy.getTitle());
+        holder.itemView.setTag(policy.getPdf_url());
+        Log.d("TAG", "Url for item " + position + " is " + policy.getPdf_url());
+        Log.d("TAG", "Title for item " + position + " is " + policy.getTitle());
+
     }
 
+    /**
+     Return number of items in RecyclerView
+     */
     @Override
     public int getItemCount() {
         if (mPoliciesFiltered == null) {
@@ -52,22 +67,28 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
         return mPoliciesFiltered.size();
     }
 
-
-    // getFilter method for search function
+    /**
+     * getFilter() method for search function
+     * @return
+     */
     @Override
     public Filter getFilter() {
         return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence charSequence) {
-                //String query = charSequence.toString();
+                //Convert user input into string
+
                 String query = charSequence != null ? charSequence.toString() : "";
+
+                //Check user query
                 if(query.isEmpty()) {
+                    //If empty, show the exact same list
                     mPoliciesFiltered = mPolicies;
                 } else {
+                    //Create a new ArrayList to add filtered policies
                     ArrayList<Policy> filteredList = new ArrayList<>();
                     for(Policy policy : mPolicies) {
-                        String name = policy.getName();
-                        if(name != null && name.contains(query)) {
+                        if(policy.getTitle().toLowerCase().contains(query.toLowerCase())) {
                             filteredList.add(policy);
                         }
                     }
@@ -126,37 +147,51 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
 //    }
 
 
-    class MyViewHolder extends RecyclerView.ViewHolder {
-        private TextView mName;
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
+        private TextView mTitle;
 
         public MyViewHolder(@NonNull View itemView, PolicyRecyclerViewInterface mInterface) {
             super(itemView);
-            mName = itemView.findViewById(R.id.tvName);
+            mTitle = itemView.findViewById(R.id.tvTitle);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mInterface.onPolicyClick(getAdapterPosition());
+                    if (mInterface != null) {
+                        mInterface.onPolicyClick((URL) itemView.getTag());
+                    }
+
                 }
             });
         }
     }
 
-    // Use the Java Collections.sort() and Comparator methods to sort the list
+    /**
+     * Sort policy list by name
+     * Use the Java Collections.sort() and Comparator methods
+     * @param sortMethod
+     */
     public void sort(final int sortMethod) {
         if (mPoliciesFiltered.size() > 0) {
             Collections.sort(mPoliciesFiltered, new Comparator<Policy>() {
                 @Override
                 public int compare(Policy o1, Policy o2) {
                     if (sortMethod == SORT_METHOD_NAME) {
-                        return o1.getName().compareTo(o2.getName());
+                        return o1.getTitle().toLowerCase().compareTo(o2.getTitle().toLowerCase());
                     } else if (sortMethod == SORT_METHOD_NAME_REVERSE) {
-                        return o2.getName().compareTo(o1.getName());
+                        return o2.getTitle().toLowerCase().compareTo(o1.getTitle().toLowerCase());
                     }
-                    // By default sort the list by coin name
-                    return o1.getName().compareTo(o2.getName());
+                    // By default sort the list in ascending order
+                    return o1.getTitle().toLowerCase().compareTo(o2.getTitle().toLowerCase());
                 }
             });
         }
+        notifyDataSetChanged();
+    }
+
+    //Add data to the adapter
+    public void setData(ArrayList<Policy> data) {
+        mPolicies.clear();
+        mPolicies.addAll(data);
         notifyDataSetChanged();
     }
 }
