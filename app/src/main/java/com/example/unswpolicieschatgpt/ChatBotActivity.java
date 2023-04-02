@@ -6,9 +6,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.unswpolicieschatgpt.chatgptapi.ChatGPTClient;
+import com.example.unswpolicieschatgpt.database.Policy;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -16,7 +20,9 @@ import com.theokanning.openai.embedding.Embedding;
 import com.theokanning.openai.service.OpenAiService;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 
@@ -28,6 +34,7 @@ public class ChatBotActivity extends AppCompatActivity {
 
     private Embedding embeddedQueryOne;
     private Embedding embeddedQueryTwo;
+    private Embedding embeddedQueryThree;
     //Firebase Database
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference databaseReference;
@@ -67,21 +74,36 @@ public class ChatBotActivity extends AppCompatActivity {
 //            }
 //        }).start();
 
-        Policy policyTesting;
+        
 
         /**
          * Connect Firebase Database with Android App
          */
         mFirebaseDatabase = FirebaseDatabase.getInstance("https://unswpolicychatbot-default-rtdb.asia-southeast1.firebasedatabase.app/");
-        databaseReference = mFirebaseDatabase.getReference("Testing");
 
-        //Try with one document
-        Policy result = databaseReference.child("Testing");
+        Policy policyTesting = new Policy();
+        mFirebaseDatabase.getReference("Policy").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                //Retrieve data from database
+                Policy result = snapshot.getValue(Policy.class);
+                
+                if (result!=null) {
 
-        Log.d(TAG, "retrieveDataFromDB");
+                    Log.d(TAG, "retrieveDataFromDB");
+                    policyTesting.setTitle(result.getTitle());
+                    policyTesting.setPurpose(result.getPurpose());
+                    policyTesting.setContact_officer(result.getContact_officer());
+                    policyTesting.setScope(result.getScope());
+                }
+            }
 
-        policyTesting.setTitle(result.getTitle());
-        policyTesting.setPurpose(result.getPurpose());
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                System.out.println("databaseReference failed!");
+            }
+        });
+        
 
 
 
@@ -101,6 +123,13 @@ public class ChatBotActivity extends AppCompatActivity {
 
         String queryOne = "I have four exams scheduled on the same day. Is this allowed?";
         String queryTwo = "I have a mid term exam weighted 40% of my overall mark. Is this allowed?";
+
+        String queryThree = "Who can I contact about the Assessment Design Procedure?";
+
+        testParagraphs.add(policyTesting.getTitle());
+        testParagraphs.add(policyTesting.getPurpose());
+        testParagraphs.add(policyTesting.getScope());
+        testParagraphs.add(policyTesting.getContact_officer());
 
         new Thread(new Runnable() {
             @Override
@@ -130,6 +159,17 @@ public class ChatBotActivity extends AppCompatActivity {
                     //Create embeddings of test paragraphs.
                     embeddedQueryOne = chatGPTClient.embedQuery(queryOne);
                     embeddedQueryTwo = chatGPTClient.embedQuery(queryTwo);
+                    embeddedQueryThree = chatGPTClient.embedQuery(queryThree);
+
+                    //Store it to Firebase Database
+                    DatabaseReference queryRef = mFirebaseDatabase.getReference("Query");
+                    //Create a new child under Query location
+                    DatabaseReference newQueryRef = queryRef.push();
+                    //Set data for the new query
+                    Map<String, Object> queryData = new HashMap<>();
+                    queryData.put("query", queryOne);
+                    queryData.put("vector", embeddedQueryOne);
+                    newQueryRef.setValue(queryData);
 
                     runOnUiThread(new Runnable() {
                         @Override
