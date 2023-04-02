@@ -1,11 +1,17 @@
 package com.example.unswpolicieschatgpt;
 
+import static android.content.ContentValues.TAG;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.unswpolicieschatgpt.chatgptapi.ChatGPTClient;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.theokanning.openai.embedding.Embedding;
 import com.theokanning.openai.service.OpenAiService;
 
@@ -22,6 +28,11 @@ public class ChatBotActivity extends AppCompatActivity {
 
     private Embedding embeddedQueryOne;
     private Embedding embeddedQueryTwo;
+    //Firebase Database
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference databaseReference;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +67,22 @@ public class ChatBotActivity extends AppCompatActivity {
 //            }
 //        }).start();
 
+        Policy policyTesting;
+
+        /**
+         * Connect Firebase Database with Android App
+         */
+        mFirebaseDatabase = FirebaseDatabase.getInstance("https://unswpolicychatbot-default-rtdb.asia-southeast1.firebasedatabase.app/");
+        databaseReference = mFirebaseDatabase.getReference("Testing");
+
+        //Try with one document
+        Policy result = databaseReference.child("Testing");
+
+        Log.d(TAG, "retrieveDataFromDB");
+
+        policyTesting.setTitle(result.getTitle());
+        policyTesting.setPurpose(result.getPurpose());
+
 
 
     //Testing for accuracy of semantic matches by cosine similarity.
@@ -65,6 +92,7 @@ public class ChatBotActivity extends AppCompatActivity {
 
         //Query 1 asks about having 4 exams in a day.
         //Query 2 asks about having an assessment weighted 40%.
+
 
 
         List<String> testParagraphs = Arrays.asList("Students will normally be required to sit no more than two examinations in a day.", "No single assessment task, including examinations but excluding research- or project-based\n" +
