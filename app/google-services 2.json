@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "129527926071",
+    "firebase_url": "https://unswpolicychatbot-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "unswpolicychatbot",
+    "storage_bucket": "unswpolicychatbot.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:129527926071:android:d3cd67d39801208e5b5eb2",
+        "android_client_info": {
+          "package_name": "com.example.unswpolicieschatgpt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "129527926071-47dhdr0fbeehivjmfdqmdn37oobnqp1t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOWL5HNb3oLs6227ivhs3OSHusgsoLJUo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "129527926071-47dhdr0fbeehivjmfdqmdn37oobnqp1t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

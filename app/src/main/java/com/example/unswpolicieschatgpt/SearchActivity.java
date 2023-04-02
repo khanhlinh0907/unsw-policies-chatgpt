@@ -67,12 +67,22 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
                     List<Policy> retrievedPolicyList = mainDao.getAll();
                     policyList.clear();
                     policyList.addAll(retrievedPolicyList);
+
+                    //Test policy section
+                    String testContent = retrievedPolicyList.get(0).getContent();
+                    String [] testPolicySection = policyDatabase.getPolicySection(testContent);
+                    for (int i = 0; i < testPolicySection.length; i++) {
+                        System.out.println("Section" + (i+1) + ": " + testPolicySection[i]);
+                    }
+
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             adapter = new PolicyAdapter(policyList, SearchActivity.this);
                             mRecyclerView.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
+
                             policyDatabase.close();
                         }
                     });

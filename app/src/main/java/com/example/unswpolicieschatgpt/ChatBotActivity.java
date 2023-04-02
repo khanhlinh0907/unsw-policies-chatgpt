@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.unswpolicieschatgpt.chatgptapi.ChatGPTClient;
 import com.example.unswpolicieschatgpt.database.Policy;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,7 +37,6 @@ public class ChatBotActivity extends AppCompatActivity {
     private Embedding embeddedQueryTwo;
     private Embedding embeddedQueryThree;
     //Firebase Database
-    private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference databaseReference;
 
 
@@ -79,6 +79,8 @@ public class ChatBotActivity extends AppCompatActivity {
         /**
          * Connect Firebase Database with Android App
          */
+        FirebaseApp.initializeApp(this);
+        FirebaseDatabase mFirebaseDatabase;
         mFirebaseDatabase = FirebaseDatabase.getInstance("https://unswpolicychatbot-default-rtdb.asia-southeast1.firebasedatabase.app/");
 
         Policy policyTesting = new Policy();

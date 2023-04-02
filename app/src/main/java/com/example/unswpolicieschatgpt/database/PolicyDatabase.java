@@ -8,16 +8,8 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-import com.example.unswpolicieschatgpt.MainActivity;
-import com.example.unswpolicieschatgpt.SearchActivity;
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader;
-import com.tom_roush.pdfbox.cos.COSArray;
-import com.tom_roush.pdfbox.cos.COSBase;
-import com.tom_roush.pdfbox.cos.COSDictionary;
-import com.tom_roush.pdfbox.cos.COSName;
-import com.tom_roush.pdfbox.cos.COSStream;
 import com.tom_roush.pdfbox.pdmodel.PDDocument;
-import com.tom_roush.pdfbox.pdmodel.PDPage;
 import com.tom_roush.pdfbox.text.PDFTextStripper;
 
 import java.io.IOException;
@@ -25,7 +17,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 //Add database entities
 @Database(entities = {Policy.class}, version = 1, exportSchema = false)
@@ -162,5 +153,10 @@ public abstract class PolicyDatabase extends RoomDatabase {
             //Add new policy to Room Database
             database.mainDao().insert(newPolicy);
         }
+    }
+
+    public String[] getPolicySection(String content) {
+        String[] sectionList = content.split("(?<=\\n)(?=\\d+\\.)");
+        return sectionList;
     }
 }
