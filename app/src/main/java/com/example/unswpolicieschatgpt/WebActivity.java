@@ -3,6 +3,7 @@ package com.example.unswpolicieschatgpt;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.webkit.WebChromeClient;
@@ -10,24 +11,50 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import java.net.URL;
+
 public class WebActivity extends AppCompatActivity {
+    public static final String INTENT_MESSAGE = "intent_message";
+    private static final String TAG = "WebActivity";
+
+    String policy_url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
+
+        /**
+         * Get the intent that started the activity
+         * Load PDF file according to policy title that users click on
+         */
+        Intent intent = getIntent();
+        if (intent.hasExtra(INTENT_MESSAGE)) {
+            // Get the URL from the intent sent from SearchActivity
+            policy_url = intent.getStringExtra(INTENT_MESSAGE);
+            System.out.println("WebActivity: onCreate: url = " + policy_url);
+
+        }
+
+        /**
+         * Setup ProgressDialog while loading the document
+         */
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading PDF...");
         progressDialog.setCancelable(false);
 
-        String url = getIntent().getStringExtra("pdf_url");
+        /**
+         * Setup WebView with the given URL to the document PDF file
+         */
         WebView webView = findViewById(R.id.web);
         webView.setWebViewClient(new WebViewClient());
         webView.getSettings().setSupportZoom(true);
         webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDisplayZoomControls(true);
-        webView.loadUrl("https://docs.google.com/gview?embedded=true&url=" + url);
+
+        //docs.google.com added to start of URL. Based off of previous iteration of Open PDF.
+        webView.loadUrl("https://docs.google.com/gview?embedded=true&url=" + policy_url);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override

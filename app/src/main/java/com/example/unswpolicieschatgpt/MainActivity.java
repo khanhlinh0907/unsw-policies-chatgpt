@@ -7,9 +7,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.view.View;
-
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
@@ -50,31 +47,77 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-        /*
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        setSupportActionBar(binding.toolbar);
-
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        */
 
         openPDF = findViewById(R.id.openPDF);
-        openPDF.setOnClickListener(new View.OnClickListener() {
+
+        /*openPDF.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), WebActivity.class);
                 intent.putExtra("pdf_url", "https://www.unsw.edu.au/content/dam/pdfs/governance/policy/2022-01-policies/assessmentdesignprocedure.pdf");
+
                 startActivity(intent);
             }
         });
 
-
-
-
         /*
+        openPDF.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            PDFBoxResourceLoader.init(getApplicationContext());
+
+                            //Create DocumentDatabase
+                            PolicyDatabase database = Room.databaseBuilder(getApplicationContext(),
+                                    PolicyDatabase.class, "Document_Database").allowMainThreadQueries().build();
+                            PolicyDao policyDao = database.mainDao();
+                            //Add documents to Room Database
+                            ArrayList<URL> urlList = database.insertURLList();
+                            for (URL url : urlList) {
+                                PDFTextExtractor textExtractor = new PDFTextExtractor();
+                                Policy policy = textExtractor.PDFTextExtractor(MainActivity.this, url);
+                                policy.setPdf_url(url);
+                                policyDao.insert(policy);
+                            }
+
+                            //Get all documents in the database
+                            List<Policy> policyList = policyDao.getAll();
+
+
+                            //Test the DocumentDatabase
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    TextView docTitle = findViewById(R.id.docTitle);
+                                    //TextView purpose = findViewById(R.id.purpose);
+                                    TextView responsible_officer = findViewById(R.id.responsible_officer);
+                                    TextView contact_officer = findViewById(R.id.contact_officer);
+
+
+                                    Policy selectedDoc = policyList.get(0);
+                                    docTitle.setText(selectedDoc.getTitle());
+                                    //purpose.setText(selectedDoc.getPurpose());
+                                    responsible_officer.setText(selectedDoc.getResponsible_officer());
+                                    contact_officer.setText(selectedDoc.getContact_officer());
+                                }
+                            });
+
+                        } catch (MalformedURLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                }).start();
+            }
+            });
+    }
+
+
+
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -85,11 +128,4 @@ public class MainActivity extends AppCompatActivity {
 
          */
     }
-
-    /**
-     *
-     * @param menu
-     * @return
-     */
-
 }

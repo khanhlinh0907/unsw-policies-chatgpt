@@ -13,4 +13,23 @@
     <string name="nav_chatbot">ChatBot</string>
     <string name="sort_1">Sort by Title</string>
     <string name="sort_2">Sort by Category</string>
+    <string name="action_sort_by_name" />
+    <string name="i_am_looking_for_policies">I am looking for policies</string>
+    <string name="how_can_i_help_you_today">How can I help you today?</string>
+
+
+    <string-array name="policy_categories">
+        <item>Any category</item>
+        <item>Assessments</item>
+        <item>Employment</item>
+        <item>Engagement</item>
+        <item>Facilities and IT</item>
+        <item>Finance and Procurement</item>
+        <item>Governance and Mgmt</item>
+        <item>Health and Safety</item>
+        <item>Research and Training</item>
+        <item>Student support</item>
+        <item>Teaching and Learning</item>
+    </string-array>
+
 </resources>
