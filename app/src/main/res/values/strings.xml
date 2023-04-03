@@ -31,5 +31,6 @@
         <item>Student support</item>
         <item>Teaching and Learning</item>
     </string-array>
+    <string name="title_activity_chatbot_conversation">ChatbotActivityConversation</string>
 
 </resources>

@@ -1,6 +1,9 @@
 package com.example.unswpolicieschatgpt;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
@@ -37,11 +40,26 @@ public class ChatBotActivity extends AppCompatActivity {
     private List <Embedding> sectionEmbedding;
 
 
+    private Button newConvButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatbot);
+
+
+        newConvButton = findViewById(R.id.newConversationButton);
+
+        newConvButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), ChatbotConversationActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
 
         /**
          * Connect Firebase Database with Android App
@@ -56,9 +74,9 @@ public class ChatBotActivity extends AppCompatActivity {
 
         //Code testing the ChatGPT API library.
         //REPLACE BELOW TOKEN WITH YOUR OWN API_KEY. DO NOT PUSH THE TOKEN TO GITHUB.
-        String token = "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";
-
-        chatGPTClient = new ChatGPTClient(token);
+//        String token = "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";
+//
+//        chatGPTClient = new ChatGPTClient(token);
 
 //        new Thread(new Runnable() {
 //            @Override
@@ -105,49 +123,49 @@ public class ChatBotActivity extends AppCompatActivity {
             }
         });*/
 
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                PolicyDatabase policyDatabase = Room.databaseBuilder(ChatBotActivity.this,
-                        PolicyDatabase.class, "Policy_Database").build();
-                PolicyDao mainDao = policyDatabase.mainDao();
-                try {
-                    policyDatabase.setupDatabase(ChatBotActivity.this);
-                    List<Policy> retrievedPolicyList = mainDao.getAll();
-                    policyDatabase.close();
-
-                    //Test policy section
-                    Policy testPolicy = retrievedPolicyList.get(0);
-                    String testContent = testPolicy.getContent();
-                    testPolicySection = policyDatabase.getPolicySection(testContent);
-                    for (int i = 0; i < testPolicySection.length; i++) {
-                        System.out.println("Section" + (i+1) + ": " + testPolicySection[i]);
-                    }
-                    sectionEmbedding = chatGPTClient.createEmbeddings(Arrays.asList(testPolicySection));
-                    DatabaseReference vectorRef = mFirebaseDatabase.getReference("Vector").push();
-
-                    String title = testPolicy.getTitle();
-                    //Create a new child with the name as policy title
-
-                    //Create a new child under Vector with the policy title
-                    //Create a Map object with all vectors
-                    Map<String, Object> vectors = new HashMap<>();
-                    for (int j = 0; j < sectionEmbedding.size(); j++) {
-                        vectors.put("section_" + j, sectionEmbedding.get(j));
-                    }
-                    vectors.put("title", title);
-                    //Add vectors to a new child
-                    vectorRef.setValue(vectors);
-
-                    //Each policy vector  will store all vectors of policy sections + title of
-
-                } catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
-        }).start();
+//
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                PolicyDatabase policyDatabase = Room.databaseBuilder(ChatBotActivity.this,
+//                        PolicyDatabase.class, "Policy_Database").build();
+//                PolicyDao mainDao = policyDatabase.mainDao();
+//                try {
+//                    policyDatabase.setupDatabase(ChatBotActivity.this);
+//                    List<Policy> retrievedPolicyList = mainDao.getAll();
+//                    policyDatabase.close();
+//
+//                    //Test policy section
+//                    Policy testPolicy = retrievedPolicyList.get(0);
+//                    String testContent = testPolicy.getContent();
+//                    testPolicySection = policyDatabase.getPolicySection(testContent);
+//                    for (int i = 0; i < testPolicySection.length; i++) {
+//                        System.out.println("Section" + (i+1) + ": " + testPolicySection[i]);
+//                    }
+//                    sectionEmbedding = chatGPTClient.createEmbeddings(Arrays.asList(testPolicySection));
+//                    DatabaseReference vectorRef = mFirebaseDatabase.getReference("Vector").push();
+//
+//                    String title = testPolicy.getTitle();
+//                    //Create a new child with the name as policy title
+//
+//                    //Create a new child under Vector with the policy title
+//                    //Create a Map object with all vectors
+//                    Map<String, Object> vectors = new HashMap<>();
+//                    for (int j = 0; j < sectionEmbedding.size(); j++) {
+//                        vectors.put("section_" + j, sectionEmbedding.get(j));
+//                    }
+//                    vectors.put("title", title);
+//                    //Add vectors to a new child
+//                    vectorRef.setValue(vectors);
+//
+//                    //Each policy vector  will store all vectors of policy sections + title of
+//
+//                } catch (MalformedURLException e) {
+//                    throw new RuntimeException(e);
+//                }
+//
+//            }
+//        }).start();
 
     //Testing for accuracy of semantic matches by cosine similarity.
     //Embed two example paragraphs using ada-002 model.
