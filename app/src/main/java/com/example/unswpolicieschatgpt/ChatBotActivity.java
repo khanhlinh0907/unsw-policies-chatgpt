@@ -56,7 +56,7 @@ public class ChatBotActivity extends AppCompatActivity {
 
         //Code testing the ChatGPT API library.
         //REPLACE BELOW TOKEN WITH YOUR OWN API_KEY. DO NOT PUSH THE TOKEN TO GITHUB.
-        String token = "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";
+        String token = "YOUR_API_KEY";
 
         chatGPTClient = new ChatGPTClient(token);
 
@@ -121,26 +121,35 @@ public class ChatBotActivity extends AppCompatActivity {
                     Policy testPolicy = retrievedPolicyList.get(0);
                     String testContent = testPolicy.getContent();
                     testPolicySection = policyDatabase.getPolicySection(testContent);
-                    for (int i = 0; i < testPolicySection.length; i++) {
-                        System.out.println("Section" + (i+1) + ": " + testPolicySection[i]);
+
+                    //Push policy content to Firebase
+                    DatabaseReference policyRef = mFirebaseDatabase.getReference("Policy").push();
+                    Map<String, Object> policy = new HashMap<>();
+
+                    for (int i = 1; i < testPolicySection.length; i++) {
+                        policy.put("content" + i, testPolicySection[i]);
                     }
+
+                    policy.put("title", testPolicy.getTitle());
+                    policyRef.setValue(policy);
+
+                    //Push content vectors to Firebase
                     sectionEmbedding = chatGPTClient.createEmbeddings(Arrays.asList(testPolicySection));
                     DatabaseReference vectorRef = mFirebaseDatabase.getReference("Vector").push();
 
-                    String title = testPolicy.getTitle();
-                    //Create a new child with the name as policy title
-
-                    //Create a new child under Vector with the policy title
                     //Create a Map object with all vectors
                     Map<String, Object> vectors = new HashMap<>();
+
+                    //Find the correlated policyID
+                    String policyID = policyRef.getKey();
+                    vectors.put("policyID", policyID);
+
                     for (int j = 0; j < sectionEmbedding.size(); j++) {
-                        vectors.put("section_" + j, sectionEmbedding.get(j));
+                        vectors.put("content" + j, sectionEmbedding.get(j));
                     }
-                    vectors.put("title", title);
+
                     //Add vectors to a new child
                     vectorRef.setValue(vectors);
-
-                    //Each policy vector  will store all vectors of policy sections + title of
 
                 } catch (MalformedURLException e) {
                     throw new RuntimeException(e);
