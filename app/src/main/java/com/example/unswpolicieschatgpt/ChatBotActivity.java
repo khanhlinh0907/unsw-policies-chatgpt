@@ -163,7 +163,17 @@ public class ChatBotActivity extends AppCompatActivity {
                         String response = testPolicySection[a];
                     }
                 }
-        // Display the response to the screen - Lachlan
+                /**
+                 * Display the response to the screen - Lachlan
+                 */
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                    }
+                });
+
+
             }
         });
 
