@@ -1,30 +1,24 @@
 package com.example.unswpolicieschatgpt;
 
-import static android.content.ContentValues.TAG;
-
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import com.example.unswpolicieschatgpt.chatgptapi.ChatGPTClient;
 import com.example.unswpolicieschatgpt.database.Policy;
+import com.example.unswpolicieschatgpt.database.PolicyDao;
+import com.example.unswpolicieschatgpt.database.PolicyDatabase;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.theokanning.openai.embedding.Embedding;
-import com.theokanning.openai.service.OpenAiService;
 
+import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 
 public class ChatBotActivity extends AppCompatActivity {
@@ -39,6 +33,9 @@ public class ChatBotActivity extends AppCompatActivity {
     //Firebase Database
     private DatabaseReference databaseReference;
 
+    private String [] testPolicySection;
+    private List <Embedding> sectionEmbedding;
+
 
 
     @Override
@@ -46,13 +43,20 @@ public class ChatBotActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatbot);
 
+        /**
+         * Connect Firebase Database with Android App
+         */
+        FirebaseApp.initializeApp(this);
+        FirebaseDatabase mFirebaseDatabase;
+        mFirebaseDatabase = FirebaseDatabase.getInstance("https://unswpolicychatbot-default-rtdb.asia-southeast1.firebasedatabase.app/");
+
 
 
 
 
         //Code testing the ChatGPT API library.
         //REPLACE BELOW TOKEN WITH YOUR OWN API_KEY. DO NOT PUSH THE TOKEN TO GITHUB.
-        String token = "YOUR_API_KEY";
+        String token = "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";
 
         chatGPTClient = new ChatGPTClient(token);
 
@@ -74,17 +78,12 @@ public class ChatBotActivity extends AppCompatActivity {
 //            }
 //        }).start();
 
-        
 
-        /**
-         * Connect Firebase Database with Android App
-         */
-        FirebaseApp.initializeApp(this);
-        FirebaseDatabase mFirebaseDatabase;
-        mFirebaseDatabase = FirebaseDatabase.getInstance("https://unswpolicychatbot-default-rtdb.asia-southeast1.firebasedatabase.app/");
 
-        Policy policyTesting = new Policy();
-        mFirebaseDatabase.getReference("Policy").addListenerForSingleValueEvent(new ValueEventListener() {
+
+
+        //Policy policyTesting = new Policy();
+        /*mFirebaseDatabase.getReference("Policy").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 //Retrieve data from database
@@ -104,10 +103,51 @@ public class ChatBotActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
                 System.out.println("databaseReference failed!");
             }
-        });
-        
+        });*/
 
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                PolicyDatabase policyDatabase = Room.databaseBuilder(ChatBotActivity.this,
+                        PolicyDatabase.class, "Policy_Database").build();
+                PolicyDao mainDao = policyDatabase.mainDao();
+                try {
+                    policyDatabase.setupDatabase(ChatBotActivity.this);
+                    List<Policy> retrievedPolicyList = mainDao.getAll();
+                    policyDatabase.close();
+
+                    //Test policy section
+                    Policy testPolicy = retrievedPolicyList.get(0);
+                    String testContent = testPolicy.getContent();
+                    testPolicySection = policyDatabase.getPolicySection(testContent);
+                    for (int i = 0; i < testPolicySection.length; i++) {
+                        System.out.println("Section" + (i+1) + ": " + testPolicySection[i]);
+                    }
+                    sectionEmbedding = chatGPTClient.createEmbeddings(Arrays.asList(testPolicySection));
+                    DatabaseReference vectorRef = mFirebaseDatabase.getReference("Vector").push();
+
+                    String title = testPolicy.getTitle();
+                    //Create a new child with the name as policy title
+
+                    //Create a new child under Vector with the policy title
+                    //Create a Map object with all vectors
+                    Map<String, Object> vectors = new HashMap<>();
+                    for (int j = 0; j < sectionEmbedding.size(); j++) {
+                        vectors.put("section_" + j, sectionEmbedding.get(j));
+                    }
+                    vectors.put("title", title);
+                    //Add vectors to a new child
+                    vectorRef.setValue(vectors);
+
+                    //Each policy vector  will store all vectors of policy sections + title of
+
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+        }).start();
 
     //Testing for accuracy of semantic matches by cosine similarity.
     //Embed two example paragraphs using ada-002 model.
@@ -128,10 +168,7 @@ public class ChatBotActivity extends AppCompatActivity {
 
         String queryThree = "Who can I contact about the Assessment Design Procedure?";
 
-        testParagraphs.add(policyTesting.getTitle());
-        testParagraphs.add(policyTesting.getPurpose());
-        testParagraphs.add(policyTesting.getScope());
-        testParagraphs.add(policyTesting.getContact_officer());
+        /*
 
         new Thread(new Runnable() {
             @Override
@@ -163,15 +200,7 @@ public class ChatBotActivity extends AppCompatActivity {
                     embeddedQueryTwo = chatGPTClient.embedQuery(queryTwo);
                     embeddedQueryThree = chatGPTClient.embedQuery(queryThree);
 
-                    //Store it to Firebase Database
-                    DatabaseReference queryRef = mFirebaseDatabase.getReference("Query");
-                    //Create a new child under Query location
-                    DatabaseReference newQueryRef = queryRef.push();
-                    //Set data for the new query
-                    Map<String, Object> queryData = new HashMap<>();
-                    queryData.put("query", queryOne);
-                    queryData.put("vector", embeddedQueryOne);
-                    newQueryRef.setValue(queryData);
+
 
                     runOnUiThread(new Runnable() {
                         @Override
@@ -203,7 +232,11 @@ public class ChatBotActivity extends AppCompatActivity {
                 }
             }
         }).start();
+
+         */
     }
+
+
 
 
 
