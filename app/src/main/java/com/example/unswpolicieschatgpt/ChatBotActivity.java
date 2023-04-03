@@ -35,6 +35,9 @@ public class ChatBotActivity extends AppCompatActivity {
 
     private String [] testPolicySection;
     private List <Embedding> sectionEmbedding;
+    private String userQuery;
+    private Embedding userQueryEmbedding;
+    private List<Double> calculated_similarity;
 
 
 
@@ -76,36 +79,11 @@ public class ChatBotActivity extends AppCompatActivity {
 //                    e.printStackTrace();
 //                }
 //            }
-//        }).start();
+//        }).start()
 
-
-
-
-
-        //Policy policyTesting = new Policy();
-        /*mFirebaseDatabase.getReference("Policy").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                //Retrieve data from database
-                Policy result = snapshot.getValue(Policy.class);
-                
-                if (result!=null) {
-
-                    Log.d(TAG, "retrieveDataFromDB");
-                    policyTesting.setTitle(result.getTitle());
-                    policyTesting.setPurpose(result.getPurpose());
-                    policyTesting.setContact_officer(result.getContact_officer());
-                    policyTesting.setScope(result.getScope());
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                System.out.println("databaseReference failed!");
-            }
-        });*/
-
-
+        /**
+         * Create vector database
+         */
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -144,7 +122,7 @@ public class ChatBotActivity extends AppCompatActivity {
                     String policyID = policyRef.getKey();
                     vectors.put("policyID", policyID);
 
-                    for (int j = 0; j < sectionEmbedding.size(); j++) {
+                    for (int j = 1; j < sectionEmbedding.size(); j++) {
                         vectors.put("content" + j, sectionEmbedding.get(j));
                     }
 
@@ -158,7 +136,38 @@ public class ChatBotActivity extends AppCompatActivity {
             }
         }).start();
 
-    //Testing for accuracy of semantic matches by cosine similarity.
+        /**
+         * Create embedding for user's query - Lachlan
+         */
+
+        /**
+         * Calculate cosine similarity between user's query and database
+         */
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (Embedding vector: sectionEmbedding) {
+                    //Calculate cosine similarity between user's query and current section
+                    //Test with one policy for now, not loading from firebase yet
+                    double similarity = cosineSimilarity(vector.getEmbedding(), userQueryEmbedding.getEmbedding());
+                    //Add calculation results to the list of calculated_similarity
+                    calculated_similarity.add(similarity);
+                }
+                //Find highest similarity
+                double highest_similarity = calculated_similarity.get(0);
+                for (int a = 1; a < calculated_similarity.size(); a++) {
+                    if (highest_similarity < calculated_similarity.get(a)) {
+                        highest_similarity = calculated_similarity.get(a);
+
+                        //Extract the correlated text
+                        String response = testPolicySection[a];
+                    }
+                }
+        // Display the response to the screen - Lachlan
+            }
+        });
+
+        //Testing for accuracy of semantic matches by cosine similarity.
     //Embed two example paragraphs using ada-002 model.
         //Test paragraph 1 refers to number of exams a student can take in a day.
         //Test paragraph two refers to maximum weighting of exams.
@@ -167,7 +176,7 @@ public class ChatBotActivity extends AppCompatActivity {
         //Query 2 asks about having an assessment weighted 40%.
 
 
-
+        /*
         List<String> testParagraphs = Arrays.asList("Students will normally be required to sit no more than two examinations in a day.", "No single assessment task, including examinations but excluding research- or project-based\n" +
                 "assessments and theses, will be weighted more than 60% of the overall course result. Assessment\n" +
                 "requirements of accreditation bodies are exempt from this limit.");
@@ -176,8 +185,6 @@ public class ChatBotActivity extends AppCompatActivity {
         String queryTwo = "I have a mid term exam weighted 40% of my overall mark. Is this allowed?";
 
         String queryThree = "Who can I contact about the Assessment Design Procedure?";
-
-        /*
 
         new Thread(new Runnable() {
             @Override
@@ -244,11 +251,6 @@ public class ChatBotActivity extends AppCompatActivity {
 
          */
     }
-
-
-
-
-
 
     public static double cosineSimilarity(List<Double> v1, List<Double> v2) {
         int minLength = Math.min(v1.size(), v2.size());
