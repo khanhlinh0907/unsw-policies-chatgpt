@@ -1,32 +1,33 @@
 package com.example.unswpolicieschatgpt;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.example.unswpolicieschatgpt.chatgptapi.ChatGPTClient;
-import com.example.unswpolicieschatgpt.database.Policy;
-import com.example.unswpolicieschatgpt.database.PolicyDao;
-import com.example.unswpolicieschatgpt.database.PolicyDatabase;
+import com.example.unswpolicieschatgpt.chatgptapi.VectorContent;
+import com.example.unswpolicieschatgpt.chatgptapi.VectorData;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.theokanning.openai.embedding.Embedding;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Vector;
 
 public class ChatbotConversationActivity extends AppCompatActivity {
 
@@ -50,9 +51,9 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
     private String [] testPolicySection;
     private List <Embedding> sectionEmbedding;
-    private String userQuery;
-    private Embedding userQueryEmbedding;
-    private List<Double> calculated_similarity;
+//    private String userQuery;
+//    private Embedding userQueryEmbedding;
+//    private List<Double> calculated_similarity;
 
 
     @Override
@@ -97,6 +98,10 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                 "I'm a UNSWer chatbot. How can I help you today?"));
         adapter.notifyDataSetChanged();
 
+        //Code testing the ChatGPT API library.
+        //REPLACE BELOW TOKEN WITH YOUR OWN API_KEY. DO NOT PUSH THE TOKEN TO GITHUB.
+        String token = "API_KEY";
+        chatGPTClient = new ChatGPTClient(token);
 
         //Handling user messages and Send Button.
         mSendButton.setOnClickListener(new View.OnClickListener() {
@@ -110,6 +115,15 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
                     //Clears input text field.
                     mInputField.setText("");
+
+
+                    mConversation.add(new ConversationMessage("BOT", "Sorry this is my fast day on the job. Let me ask my manager..."));
+
+
+                    //Starts semantic search process.
+                    SemanticThread semanticThread = new SemanticThread(userInput, token);
+                    semanticThread.start();
+
 
                 }
 
@@ -133,11 +147,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
 
 
-        //Code testing the ChatGPT API library.
-        //REPLACE BELOW TOKEN WITH YOUR OWN API_KEY. DO NOT PUSH THE TOKEN TO GITHUB.
-        String token = "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";
 
-        chatGPTClient = new ChatGPTClient(token);
 
 //        new Thread(new Runnable() {
 //            @Override
@@ -157,60 +167,60 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 //            }
 //        }).start()
 
-        /**
-         * Create vector database
-         */
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                PolicyDatabase policyDatabase = Room.databaseBuilder(ChatbotConversationActivity.this,
-                        PolicyDatabase.class, "Policy_Database").build();
-                PolicyDao mainDao = policyDatabase.mainDao();
-                try {
-                    policyDatabase.setupDatabase(ChatbotConversationActivity.this);
-                    List<Policy> retrievedPolicyList = mainDao.getAll();
-                    policyDatabase.close();
-
-                    //Test policy section
-                    Policy testPolicy = retrievedPolicyList.get(0);
-                    String testContent = testPolicy.getContent();
-                    testPolicySection = policyDatabase.getPolicySection(testContent);
-
-                    //Push policy content to Firebase
-                    DatabaseReference policyRef = mFirebaseDatabase.getReference("Policy").push();
-                    Map<String, Object> policy = new HashMap<>();
-
-                    for (int i = 1; i < testPolicySection.length; i++) {
-                        policy.put("content" + i, testPolicySection[i]);
-                    }
-
-                    policy.put("title", testPolicy.getTitle());
-                    policyRef.setValue(policy);
-
-                    //Push content vectors to Firebase
-                    sectionEmbedding = chatGPTClient.createEmbeddings(Arrays.asList(testPolicySection));
-                    DatabaseReference vectorRef = mFirebaseDatabase.getReference("Vector").push();
-
-                    //Create a Map object with all vectors
-                    Map<String, Object> vectors = new HashMap<>();
-
-                    //Find the correlated policyID
-                    String policyID = policyRef.getKey();
-                    vectors.put("policyID", policyID);
-
-                    for (int j = 1; j < sectionEmbedding.size(); j++) {
-                        vectors.put("content" + j, sectionEmbedding.get(j));
-                    }
-
-                    //Add vectors to a new child
-                    vectorRef.setValue(vectors);
-
-                } catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
-        }).start();
+//        /**
+//         * Create vector database
+//         */
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                PolicyDatabase policyDatabase = Room.databaseBuilder(ChatbotConversationActivity.this,
+//                        PolicyDatabase.class, "Policy_Database").build();
+//                PolicyDao mainDao = policyDatabase.mainDao();
+//                try {
+//                    policyDatabase.setupDatabase(ChatbotConversationActivity.this);
+//                    List<Policy> retrievedPolicyList = mainDao.getAll();
+//                    policyDatabase.close();
+//
+//                    //Test policy section
+//                    Policy testPolicy = retrievedPolicyList.get(0);
+//                    String testContent = testPolicy.getContent();
+//                    testPolicySection = policyDatabase.getPolicySection(testContent);
+//
+//                    //Push policy content to Firebase
+//                    DatabaseReference policyRef = mFirebaseDatabase.getReference("Policy").push();
+//                    Map<String, Object> policy = new HashMap<>();
+//
+//                    for (int i = 1; i < testPolicySection.length; i++) {
+//                        policy.put("content" + i, testPolicySection[i]);
+//                    }
+//
+//                    policy.put("title", testPolicy.getTitle());
+//                    policyRef.setValue(policy);
+//
+//                    //Push content vectors to Firebase
+//                    sectionEmbedding = chatGPTClient.createEmbeddings(Arrays.asList(testPolicySection));
+//                    DatabaseReference vectorRef = mFirebaseDatabase.getReference("Vector").push();
+//
+//                    //Create a Map object with all vectors
+//                    Map<String, Object> vectors = new HashMap<>();
+//
+//                    //Find the correlated policyID
+//                    String policyID = policyRef.getKey();
+//                    vectors.put("policyID", policyID);
+//
+//                    for (int j = 1; j < sectionEmbedding.size(); j++) {
+//                        vectors.put("content" + j, sectionEmbedding.get(j));
+//                    }
+//
+//                    //Add vectors to a new child
+//                    vectorRef.setValue(vectors);
+//
+//                } catch (MalformedURLException e) {
+//                    throw new RuntimeException(e);
+//                }
+//
+//            }
+//        }).start();
 
         /**
          * Create embedding for user's query - Lachlan
@@ -219,39 +229,39 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         /**
          * Calculate cosine similarity between user's query and database
          */
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (Embedding vector: sectionEmbedding) {
-                    //Calculate cosine similarity between user's query and current section
-                    //Test with one policy for now, not loading from firebase yet
-                    double similarity = cosineSimilarity(vector.getEmbedding(), userQueryEmbedding.getEmbedding());
-                    //Add calculation results to the list of calculated_similarity
-                    calculated_similarity.add(similarity);
-                }
-                //Find highest similarity
-                double highest_similarity = calculated_similarity.get(0);
-                for (int a = 1; a < calculated_similarity.size(); a++) {
-                    if (highest_similarity < calculated_similarity.get(a)) {
-                        highest_similarity = calculated_similarity.get(a);
-
-                        //Extract the correlated text
-                        String response = testPolicySection[a];
-                    }
-                }
-                /**
-                 * Display the response to the screen - Lachlan
-                 */
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                    }
-                });
-
-
-            }
-        });
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                for (Embedding vector: sectionEmbedding) {
+//                    //Calculate cosine similarity between user's query and current section
+//                    //Test with one policy for now, not loading from firebase yet
+//                    double similarity = cosineSimilarity(vector.getEmbedding(), userQueryEmbedding.getEmbedding());
+//                    //Add calculation results to the list of calculated_similarity
+//                    calculated_similarity.add(similarity);
+//                }
+//                //Find highest similarity
+//                double highest_similarity = calculated_similarity.get(0);
+//                for (int a = 1; a < calculated_similarity.size(); a++) {
+//                    if (highest_similarity < calculated_similarity.get(a)) {
+//                        highest_similarity = calculated_similarity.get(a);
+//
+//                        //Extract the correlated text
+//                        String response = testPolicySection[a];
+//                    }
+//                }
+//                /**
+//                 * Display the response to the screen - Lachlan
+//                 */
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//                    }
+//                });
+//
+//
+//            }
+//        });
 
         //Testing for accuracy of semantic matches by cosine similarity.
         //Embed two example paragraphs using ada-002 model.
@@ -359,5 +369,291 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
 
 
+    private class SemanticThread extends Thread {
+        private String userInput;
+        private String openAIEndpoint;
+        private String openAIKey;
+        private List<Double> calculated_similarity;
+
+        private List<VectorContent> similarVectorContent;
+
+        private Embedding embedInput;
+        private VectorData vectorData;
+        private List<VectorContent> contentList;
+
+
+        public SemanticThread(String userInput, String openAIKey) {
+            this.userInput = userInput;
+            this.openAIKey = openAIKey;
+        }
+
+        @Override
+        public void run() {
+            // Code to send user input to OpenAI and retrieve embedding goes here
+            chatGPTClient = new ChatGPTClient("token");
+
+            System.out.println(userInput);
+            embedInput = chatGPTClient.embedQuery(userInput);
+
+
+            //Retrieve vectors from Firebase.
+            FirebaseApp.initializeApp(getApplicationContext());
+            FirebaseDatabase mFirebaseDatabase;
+            mFirebaseDatabase = FirebaseDatabase.getInstance("https://unswpolicychatbot-default-rtdb.asia-southeast1.firebasedatabase.app/");
+
+            DatabaseReference mDatabase = mFirebaseDatabase.getReference();
+
+
+            mDatabase.child("Vector").child("-NS64UZECuTnz5pw_x56").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    //Handling successful retrieval of vectors.
+                    //Vector Data represents Firebase representation of contents.
+                    VectorData vectorData = snapshot.getValue(VectorData.class);
+                    Log.e("firebase", "Success");
+
+                    System.out.println("semantic thread: vector data:  " +  vectorData);
+                    System.out.println("semantic thread: snapshot: " + snapshot.getValue());
+
+                    contentList = new ArrayList<>();
+
+                    System.out.println("semantic thread: content List " + contentList);
+
+
+                    //ContentList retrieves all contents of VectorData class.
+                    contentList = vectorData.getVectorContent();
+
+
+                    //Calculate cosine similarity between each vector and the query.
+                    for (int i=0; i<contentList.size(); i++) {
+                        double similarity = cosineSimilarity(contentList.get(i).getEmbedding(), embedInput.getEmbedding());
+
+
+                        //Creates two lists. One to store the vectors and content, and one to store the similarity scores.
+                        similarVectorContent.add(contentList.get(i));
+                        calculated_similarity.add(similarity);
+                    }
+
+
+                    //Finding the highest similarity both content and score wise.
+
+                    double highestSimilarity = calculated_similarity.get(0);
+                    VectorContent highestVector = contentList.get(0);
+
+                    for (int j = 1; j < contentList.size(); j++) {
+                        if (highestSimilarity < calculated_similarity.get(j)) {
+
+                            //Sets similarity score to higher value.
+                            highestSimilarity = calculated_similarity.get(j);
+
+                            //Sets vector content with highest similarity score.
+                            highestVector = contentList.get(j);
+                        }
+                    }
+
+                    //Use the highest vector to run another firebase query to find the relevant paragraph.
+                    mDatabase.child("Policy").child("NS64UZECuTnz5pw_x56").child("content" + highestVector.getIndex()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String response = (String) snapshot.getValue();
+
+                            updateUI(response);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                    };
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+
+//
+//            mDatabase.child("Vector").child("NS4bAh0YoMrxADkVnbw").addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                    //Handling successful retrieval of vectors.
+//                    //Vector Data represents Firebase representation of contents.
+//                    VectorData vectorData = snapshot.getValue(VectorData.class);
+//                    Log.e("firebase", "Success");
+//
+//                    System.out.println("semantic thread: vector data:  " +  vectorData);
+//                    System.out.println("semantic thread: snapshot: " + snapshot.getValue());
+//                    System.out.println("semantic thread: content List " + contentList);
+//
+//
+//                    //ContentList retrieves all contents of VectorData class.
+//                    contentList = vectorData.getVectorContent();
+//
+//
+//                    //Calculate cosine similarity between each vector and the query.
+//                    for (int i=0; i<contentList.size(); i++) {
+//                        double similarity = cosineSimilarity(contentList.get(i).getEmbedding(), embedInput.getEmbedding());
+//
+//
+//                        //Creates two lists. One to store the vectors and content, and one to store the similarity scores.
+//                        similarVectorContent.add(contentList.get(i));
+//                        calculated_similarity.add(similarity);
+//                    }
+//
+//
+//                    //Finding the highest similarity both content and score wise.
+//
+//                    double highestSimilarity = calculated_similarity.get(0);
+//                    VectorContent highestVector = contentList.get(0);
+//
+//                    for (int j = 1; j < contentList.size(); j++) {
+//                        if (highestSimilarity < calculated_similarity.get(j)) {
+//
+//                            //Sets similarity score to higher value.
+//                            highestSimilarity = calculated_similarity.get(j);
+//
+//                            //Sets vector content with highest similarity score.
+//                            highestVector = contentList.get(j);
+//                        }
+//                    }
+//
+//                    //Use the highest vector to run another firebase query to find the relevant paragraph.
+//                    mDatabase.child("Policy").child("NS4bA03vpGJARciijL4").child("content" + highestVector.getIndex()).addValueEventListener(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                            String response = snapshot.getValue().toString();
+//
+//                            updateUI(response);
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(@NonNull DatabaseError error) {
+//
+//                        }
+//                    });
+//
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError error) {
+//
+//                }
+//            });
+
+//
+//
+//            mDatabase.child("Vector").child("NS4bA03vpGJARciijL4").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+//                @Override
+//                public void onComplete(@NonNull Task<DataSnapshot> task) {
+//                    if (!task.isSuccessful()) {
+//                        //Handling if firebase call is unsuccessful.
+//                        Log.e("firebase", "Error getting data", task.getException());
+//                    } else {
+//                        //Handling successful retrieval of vectors.
+//                        //Vector Data represents Firebase representation of contents.
+//                        vectorData = task.getResult().getValue(VectorData.class);
+//                        Log.e("firebase", "Success");
+//
+//                        System.out.println("semantic thread: vector data:  " +  vectorData);
+//                        System.out.println("semantic thread: task: " + task.getResult());
+//                        System.out.println("semantic thread: content List " + contentList);
+//
+//                        //ContentList retrieves all contents of VectorData class.
+//                        contentList = vectorData.getVectorContent();
+//
+//
+//                        //Calculate cosine similarity between each vector and the query.
+//                        for (int i=0; i<contentList.size(); i++) {
+//                            double similarity = cosineSimilarity(contentList.get(i).getEmbedding(), embedInput.getEmbedding());
+//
+//
+//                            //Creates two lists. One to store the vectors and content, and one to store the similarity scores.
+//                            similarVectorContent.add(contentList.get(i));
+//                            calculated_similarity.add(similarity);
+//                        }
+//
+//
+//                        //Finding the highest similarity both content and score wise.
+//
+//                        double highestSimilarity = calculated_similarity.get(0);
+//                        VectorContent highestVector = contentList.get(0);
+//
+//                        for (int j = 1; j < contentList.size(); j++) {
+//                            if (highestSimilarity < calculated_similarity.get(j)) {
+//
+//                                //Sets similarity score to higher value.
+//                                highestSimilarity = calculated_similarity.get(j);
+//
+//                                //Sets vector content with highest similarity score.
+//                                highestVector = contentList.get(j);
+//                            }
+//                        }
+//
+//                        //Use the highest vector to run another firebase query to find the relevant paragraph.
+//                        mDatabase.child("Policy").child("NS4bA03vpGJARciijL4").child("content" + highestVector.getIndex()).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<DataSnapshot> task) {
+//                                String response = task.getResult().toString();
+//
+//                                updateUI(response);
+//                            }
+//                        });
+//
+//
+//                    }
+//                }
+//            });
+
+            //Extract the embedding material from VectorData. VectorData contains a list of VectorContents - which has embeddings, index and object attributes.
+
+//            List<List<Embedding>> contentList = new ArrayList<>();
+//
+//            List<Embedding> sectionEmbedding = new ArrayList<>();
+//
+//
+//            for (VectorContent vectorContent : resultVector.getVectorContent()) {
+//                sectionEmbedding.add(vectorContent.getEmbedding());
+//
+//            }
+
+
+            //Calculating cosine simlarity between user query and each embedding.
+
+//            for (int a = 0; a < sectionEmbedding.size(); a++) {
+//
+//                //Calculate cosine similarity between user's query and current section
+//                //Test with one policy for now, not loading from firebase yet
+//                double similarity = cosineSimilarity(sectionEmbedding.get(a), embedInput.getEmbedding());
+//                //Add calculation results to the list of calculated_similarity
+//                calculated_similarity.add(similarity);
+//            }
+//            //Find highest similarity
+//            double highest_similarity = calculated_similarity.get(0);
+//
+//            String response = "";
+//
+//            for (int a = 1; a < calculated_similarity.size(); a++) {
+//                if (highest_similarity < calculated_similarity.get(a)) {
+//                    highest_similarity = calculated_similarity.get(a);
+//
+//                    //Extract the correlated text
+//                    response = testPolicySection[a];
+//                }
+//            }
+//            updateUI(response);
+        }
+
+        private void updateUI(final String response) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mConversation.add(new ConversationMessage("BOT", response));
+                    adapter.notifyDataSetChanged();
+                }
+            });
+        }
+    }
 
 }
