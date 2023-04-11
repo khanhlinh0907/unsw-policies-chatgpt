@@ -46,5 +46,9 @@ public interface PolicyDao {
     //Get policy url by title
     @Query("SELECT pdf_url FROM Policy WHERE title = :sTitle")
     URL getPolicyURLByTitle(String sTitle);
+
+    //Get policy by url
+    @Query("SELECT * FROM Policy WHERE pdf_url = :sPdfUrl")
+    Policy getByPdfUrl(String sPdfUrl);
 }
 

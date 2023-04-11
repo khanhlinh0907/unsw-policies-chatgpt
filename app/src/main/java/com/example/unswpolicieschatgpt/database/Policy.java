@@ -2,17 +2,18 @@ package com.example.unswpolicieschatgpt.database;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import java.net.URL;
 
-@Entity
+@Entity(tableName = "Policy", indices = {@Index(value = {"pdf_url"}, unique = true)})
 public class Policy {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
     @ColumnInfo(name = "pdf_url")
-    private URL pdf_url;
+    private String pdf_url;
     @ColumnInfo(name = "title")
     private String title;
     @ColumnInfo(name = "category")
@@ -54,7 +55,7 @@ public class Policy {
         this.id = id;
     }
 
-    public void setPdf_url(URL pdf_url) {
+    public void setPdf_url(String pdf_url) {
         this.pdf_url = pdf_url;
     }
 
@@ -99,7 +100,7 @@ public class Policy {
         return id;
     }
 
-    public URL getPdf_url() {
+    public String getPdf_url() {
         return pdf_url;
     }
 

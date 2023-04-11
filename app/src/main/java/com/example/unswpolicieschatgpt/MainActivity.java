@@ -1,23 +1,33 @@
 package com.example.unswpolicieschatgpt;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
+import com.example.unswpolicieschatgpt.database.Policy;
+import com.example.unswpolicieschatgpt.database.PolicyDatabase;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.view.MenuItem;
 import android.widget.Button;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Button openPDF;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        PolicyDatabase.UploadTask task = new PolicyDatabase.UploadTask(this);
+        task.execute();
 
         //Bottom Navigation View
         bottomNav = findViewById(R.id.bottomNavigationView);
@@ -47,8 +57,11 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
 
-        openPDF = findViewById(R.id.openPDF);
+
+
+        //openPDF = findViewById(R.id.openPDF);
 
         /*openPDF.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,4 +141,3 @@ public class MainActivity extends AppCompatActivity {
 
          */
     }
-}

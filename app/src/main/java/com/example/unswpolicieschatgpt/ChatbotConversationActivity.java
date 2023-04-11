@@ -115,7 +115,6 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
                     //mConversation.add(new ConversationMessage("BOT", "Sorry this is my fast day on the job. Let me ask my manager..."));
 
-
                     //Starts semantic search process.
                     SemanticThread semanticThread = new SemanticThread(userInput, token);
                     semanticThread.start();
