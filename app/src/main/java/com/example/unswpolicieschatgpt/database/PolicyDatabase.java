@@ -11,8 +11,11 @@ import androidx.room.TypeConverters;
 
 import com.example.unswpolicieschatgpt.SearchActivity;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader;
 import com.tom_roush.pdfbox.pdmodel.PDDocument;
 import com.tom_roush.pdfbox.text.PDFTextStripper;
@@ -68,6 +71,7 @@ public abstract class PolicyDatabase extends RoomDatabase {
             } else {
                 //Insert new policy into Room Database
                 mDatabase.mainDao().insert(newPolicy);
+                Log.d("POLICY_INSERT", "Added new policy to Room database");
             }
         }
     }
@@ -102,7 +106,7 @@ public abstract class PolicyDatabase extends RoomDatabase {
         //Find title;
         //Note: Every PDF file page starts with a series of dash '-' so need to eliminate these
 
-        String titleString = text.substring(96, text.indexOf("Page 1 of"));
+        String titleString = text.substring(97, text.indexOf("Page 1 of"));
         title = titleString.replace(String.valueOf('-'), "");
 
         /**
@@ -198,16 +202,32 @@ public abstract class PolicyDatabase extends RoomDatabase {
                 throw new RuntimeException(e);
             }
             List<Policy> policyList = mDatabase.mainDao().getAll();
-            System.out.println("PolicyList size: " + policyList.size());
+            System.out.println("PolicyList size: " + policyList.size()); //size = 6
 
             // Upload the data to Firebase
             DatabaseReference policyRef = mFirebaseDatabase.getReference("Policy");
 
-            for (Policy item : policyList) {
-                //Get the ID of policy and set as the unique identifier for Policy child node in Firebase
-                policyRef.child(String.valueOf(item.getId())).setValue(item);
-                //Add PolicyURL to Firebase
-            }
+            // Count number of children in policyRef
+            policyRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    long count = dataSnapshot.getChildrenCount();
+                    // Use the count variable here
+                    if (count < policyList.size()) {
+                        for (Policy item : policyList) {
+                            //Get the ID of policy and set as the unique identifier for Policy child node in Firebase
+                            policyRef.child(String.valueOf(item.getId())).setValue(item);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // Handle error
+                }
+            });
+
+
 
             return null;
         }

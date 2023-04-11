@@ -15,6 +15,7 @@ import android.widget.Spinner;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import com.example.unswpolicieschatgpt.database.Policy;
 import com.example.unswpolicieschatgpt.database.PolicyDao;
@@ -60,18 +61,12 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
             @Override
             public void run() {
                 try {
+                    policyDatabase = Room.databaseBuilder(SearchActivity.this,
+                            PolicyDatabase.class, "Policy_Database").fallbackToDestructiveMigration().build();
                     policyDatabase.setupDatabase(SearchActivity.this);
                     List<Policy> retrievedPolicyList = policyDatabase.mainDao().getAll();
                     policyList.clear();
                     policyList.addAll(retrievedPolicyList);
-
-                    //Test policy section
-                    String testContent = retrievedPolicyList.get(0).getContent();
-                    String [] testPolicySection = policyDatabase.getPolicySection(testContent);
-                    for (int i = 0; i < testPolicySection.length; i++) {
-                        System.out.println("Section" + (i+1) + ": " + testPolicySection[i]);
-                    }
-
 
                     runOnUiThread(new Runnable() {
                         @Override
