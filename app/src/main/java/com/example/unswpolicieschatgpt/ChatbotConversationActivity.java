@@ -4,40 +4,24 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.unswpolicieschatgpt.chatgptapi.ChatGPTClient;
-import com.example.unswpolicieschatgpt.chatgptapi.VectorContent;
-import com.example.unswpolicieschatgpt.chatgptapi.VectorData;
-import com.example.unswpolicieschatgpt.database.Policy;
-import com.example.unswpolicieschatgpt.database.PolicyDao;
-import com.example.unswpolicieschatgpt.database.PolicyDatabase;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.theokanning.openai.embedding.Embedding;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 public class ChatbotConversationActivity extends AppCompatActivity {
 
@@ -87,8 +71,6 @@ public class ChatbotConversationActivity extends AppCompatActivity {
             }
         });
 
-
-
         //Default message that starts every conversation.
 
         mConversation.add(new ConversationMessage("BOT", "Hello there. " +
@@ -97,7 +79,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
         //Code testing the ChatGPT API library.
         //REPLACE BELOW TOKEN WITH YOUR OWN API_KEY. DO NOT PUSH THE TOKEN TO GITHUB.
-        String token = "YOUR-API-KEY";
+        String token = "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";
         chatGPTClient = new ChatGPTClient(token);
 
         //Handling user messages and Send Button.
@@ -135,61 +117,6 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
         FirebaseDatabase mFirebaseDatabase;
         mFirebaseDatabase = FirebaseDatabase.getInstance("https://unswpolicychatbot-default-rtdb.asia-southeast1.firebasedatabase.app/");
-
-/*
-        *//**
-         * Create vector database -currently comment out to save API usage
-         *//*
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                PolicyDatabase policyDatabase = Room.databaseBuilder(ChatbotConversationActivity.this,
-                        PolicyDatabase.class, "Policy_Database").build();
-                PolicyDao mainDao = policyDatabase.mainDao();
-                try {
-                    policyDatabase.setupDatabase(ChatbotConversationActivity.this);
-                    List<Policy> retrievedPolicyList = mainDao.getAll();
-                    policyDatabase.close();
-
-                    //Test policy section
-                    Policy testPolicy = retrievedPolicyList.get(0);
-                    String testContent = testPolicy.getContent();
-                    testPolicySection = policyDatabase.getPolicySection(testContent);
-
-                    //Push policy content to Firebase
-                    DatabaseReference policyRef = mFirebaseDatabase.getReference("Policy").push();
-                    Map<String, Object> policy = new HashMap<>();
-
-                    for (int i = 1; i < testPolicySection.length; i++) {
-                        policy.put("content" + i, testPolicySection[i]);
-                    }
-
-                    policyRef.setValue(policy);
-
-                    //Push content vectors to Firebase
-                    sectionEmbedding = chatGPTClient.createEmbeddings(Arrays.asList(testPolicySection));
-                    DatabaseReference vectorRef = mFirebaseDatabase.getReference("Vector").push();
-
-                    //Create a Map object with all vectors
-                    Map<String, Object> vectors = new HashMap<>();
-
-                    //Find the correlated policyID
-                    String policyID = policyRef.getKey();
-                    vectors.put("policyID", policyID);
-
-                    for (int j = 1; j < sectionEmbedding.size(); j++) {
-                        vectors.put("content" + j, sectionEmbedding.get(j));
-                    }
-
-                    //Add vectors to a new child
-                    vectorRef.setValue(vectors);
-
-                } catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
-        }).start();*/
     }
 
     private class SemanticThread extends Thread {
@@ -197,6 +124,8 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         private String openAIKey;
 
         private Embedding embedInput;
+        private String matchedPolicyId;
+        private String matchedSectionId;
 
         public SemanticThread(String userInput, String openAIKey) {
             this.userInput = userInput;
@@ -208,64 +137,91 @@ public class ChatbotConversationActivity extends AppCompatActivity {
          */
         @Override
         public void run() {
-            chatGPTClient = new ChatGPTClient("YOUR-API-KEY");
+            chatGPTClient = new ChatGPTClient("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");
             //Get embeddings of user input
             embedInput = chatGPTClient.embedQuery(userInput);
-            //System.out.println("Embed Input Vector" + embedInput);
 
             //Initialize Firebase Database
             FirebaseApp.initializeApp(getApplicationContext());
-            FirebaseDatabase mFirebaseDatabase;
-            mFirebaseDatabase = FirebaseDatabase.getInstance("https://unswpolicychatbot-default-rtdb.asia-southeast1.firebasedatabase.app/");
-            DatabaseReference mDatabase = mFirebaseDatabase.getReference();
+            FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance("https://unswpolicychatbot-default-rtdb.asia-southeast1.firebasedatabase.app/");
 
             //Retrieve embeddings of the testing policy sections from Firebase Database
-            mDatabase.child("Vector").child("-NS64UZECuTnz5pw_x56").addListenerForSingleValueEvent(new ValueEventListener() {
+            DatabaseReference vectorRef = mFirebaseDatabase.getReference("Vector");
+            List<Double> highestScoreList = new ArrayList<>();
+            List<Long> indexOfHighestScoreList = new ArrayList<>();
+            List<String> policyIDList = new ArrayList<>();
+            vectorRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    //Ignore the last child as "PolicyID"
-                    List<DataSnapshot> children = new ArrayList<>();
-                    for (DataSnapshot vectorDataSnapshot: snapshot.getChildren()) {
-                        children.add(vectorDataSnapshot);
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot policySnapshot : dataSnapshot.getChildren()) {
+                        String policyId = policySnapshot.getKey();
+                        System.out.println("PolicyID: " + policyId);
+                        policyIDList.add(policyId);
+                        List<List<Double>> embeddingList = new ArrayList<>();
+                        List<Long> embeddingIndexList = new ArrayList<>();
+
+                        //List<Double> similarityScoreList = new ArrayList<>();
+                        for (DataSnapshot contentSnapshot : policySnapshot.getChildren()) {
+                            String contentId = contentSnapshot.getKey();
+                            ArrayList<Double> embedding = (ArrayList<Double>) contentSnapshot.child("embedding").getValue();
+                            System.out.println("Content ID: " + contentId + ", Embedding: " + embedding);
+                            //Retrieve the INDEX of embeddings
+                            //This index will be used to retrieve the corresponding index of policy text
+                            Long embeddingIndex = (Long) contentSnapshot.child("index").getValue();
+                            System.out.println("Embedding Index: " + embeddingIndex);
+                            embeddingList.add(embedding);
+                            embeddingIndexList.add(embeddingIndex);
+                            //Calculate similarity score of individual policy section
+                            //double similarityScore = cosineSimilarity(embedding, embedInput.getEmbedding());
+                            //Add to list of similarity scores of all sections in 1 policy
+                            //similarityScoreList.add(similarityScore);
+                        }
+                        //Find the highest similarity score of each document
+                        List findHighestScore = findHighestSimilarityScore(embeddingList, embedInput);
+                        double highestScoreOfSingleDocument = (double) findHighestScore.get(0);
+                        //Find the index of policy section with the highest similarity - this is the order appeared in Firebase
+                        int firebaseIndexHighestScoreOfSingleDocument = (int) findHighestScore.get(1);
+                        //Add the highest score of single document to highestScoreList
+                        highestScoreList.add(highestScoreOfSingleDocument);
+                        //Find the actual index of policy section with the highest score
+                        Long indexHighestScoreOfSingleDocument = embeddingIndexList.get(firebaseIndexHighestScoreOfSingleDocument);
+                        //Add the actual index of policy section with the highest score
+                        indexOfHighestScoreList.add(indexHighestScoreOfSingleDocument);
+
+                        System.out.println("PolicyID" + policyId + "has the highest similarity score of " + highestScoreOfSingleDocument);
+                        System.out.println("Firebase Index of the highest score of " + policyId + "is " + firebaseIndexHighestScoreOfSingleDocument);
+                        System.out.println("Actual index of the highest score of " + policyId + "is " + indexHighestScoreOfSingleDocument);
+
                     }
-                    List<DataSnapshot> childrenWithoutPolicyID = children.subList(0, children.size() - 1);
-
-                    //Get policyID corresponding to the embeddings
-                    //policyID is the last child in the snapshot
-                    int lastIndex = children.size() -1;
-                    String policyID = String.valueOf(children.get(lastIndex).getValue(String.class));
-
                     /**
-                     * Retrieve embeddings of policy content
+                     * Find the highest similarity score of all documents
                      */
-                    List<List<Double>> embeddingList = new ArrayList<>();
-                    List<Long> embeddingIndexList = new ArrayList<>();
-                    for (DataSnapshot vectorDataSnapshot: childrenWithoutPolicyID) {
-                        ArrayList<Double> embedding = (ArrayList<Double>) vectorDataSnapshot.child("embedding").getValue();
 
-                        //Retrieve the INDEX of embeddings
-                        //This index will be used to retrieve the corresponding index of policy text
-                        Long embeddingIndex = (Long) vectorDataSnapshot.child("index").getValue();
-                        embeddingList.add(embedding);
-                        embeddingIndexList.add(embeddingIndex);
+                    double highestVector = highestScoreList.get(0);
+                    // Index of the policy having highest similarity
+                    int indexHighestScore = 0;
+                    for (int i = 0; i < highestScoreList.size(); i++) {
+                        if (highestScoreList.get(i) > highestVector) {
+                            highestVector = highestScoreList.get(i);
+                            indexHighestScore = i;
+                        }
                     }
-                    //System.out.println("EmbeddingList: " + embeddingList);
+                    System.out.println("Highest Vector of all documents: " + highestVector);
+                    System.out.println("Policy index of the highest vector: " + indexHighestScore);
+                    //Find matched policyID
+                    matchedPolicyId = policyIDList.get(indexHighestScore);
+                    System.out.println("Matched PolicyID: " + matchedPolicyId);
+                    matchedSectionId = String.valueOf(indexOfHighestScoreList.get(indexHighestScore));
+                    System.out.println("Matched PolicySection: content" + matchedSectionId);
 
-                    /**
-                     * Find embeddings with highest cosine similarity with user input
-                     */
-                    //index of embeddings with highest cosine similarity
-                    int matchedEmbeddingIndex = highestSimilarity(embeddingList, embedInput);
-                    //corresponding index in Firebase Database
-                    Long matchedContentIndex = embeddingIndexList.get(matchedEmbeddingIndex);
-
+                    DatabaseReference policyRef = mFirebaseDatabase.getReference("Policy");
                     /**
                      * Find the matching content of the highest similarity vector
                      */
-                    mDatabase.child("Policy").child(policyID).child("content" + matchedContentIndex).addListenerForSingleValueEvent(new ValueEventListener() {
+                    policyRef.child(matchedPolicyId).child("content" + matchedSectionId).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            String response = (String) snapshot.getValue();
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            String response = (String) dataSnapshot.getValue();
                             updateUI(response);
                             System.out.println("Response: " + response);
                         }
@@ -275,37 +231,41 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
                         }
                     });
-                    };
+                }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
+                public void onCancelled(DatabaseError databaseError) {
+                    // Handle error
                 }
             });
 
         }
 
+
+
         /**
-         * Find index of the embeddings with highest cosine similarity with user input
+         * Find Firebase index of the embeddings with highest cosine similarity with user input
          * @param embeddingList
          * @param embedInput
          * @return
          */
-        private int highestSimilarity(List<List<Double>> embeddingList, Embedding embedInput) {
-            double highestSimilarity = -1;
+        private List findHighestSimilarityScore(List<List<Double>> embeddingList, Embedding embedInput) {
+            List highestSimilarity = new ArrayList<>();
+            double highestSimilarityScore = -1;
             int highestIndex = 0;
 
             for (int i=0; i<embeddingList.size(); i++) {
                 double similarity = cosineSimilarity(embeddingList.get(i), embedInput.getEmbedding());
 
-                System.out.println("Similarity");
-                if (highestSimilarity < similarity) {
-                    highestSimilarity = similarity;
+                if (highestSimilarityScore < similarity) {
+                    highestSimilarityScore = similarity;
                     highestIndex = i;
                 }
             }
-            System.out.println("Highest Similarity: " + highestSimilarity);
-            return highestIndex;
+            highestSimilarity.add(highestSimilarityScore);
+            highestSimilarity.add(highestIndex);
+            System.out.println("Highest Similarity: " + highestSimilarityScore);
+            return highestSimilarity;
         }
 
         /**
@@ -323,7 +283,9 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         }
     }
 
-    /**
+
+
+                /**
      * Cosine Similarity Function
      * @param v1
      * @param v2
