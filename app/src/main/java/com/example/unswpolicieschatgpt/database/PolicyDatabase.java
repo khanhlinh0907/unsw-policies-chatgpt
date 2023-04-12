@@ -10,12 +10,14 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
 import com.example.unswpolicieschatgpt.SearchActivity;
+import com.example.unswpolicieschatgpt.chatgptapi.ChatGPTClient;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.theokanning.openai.embedding.Embedding;
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader;
 import com.tom_roush.pdfbox.pdmodel.PDDocument;
 import com.tom_roush.pdfbox.text.PDFTextStripper;
@@ -25,12 +27,13 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 //Add database entities
-@Database(entities = {Policy.class}, version = 2, exportSchema = false)
+@Database(entities = {Policy.class}, version = 3, exportSchema = false)
 @TypeConverters({Converters.class})
 
 public abstract class PolicyDatabase extends RoomDatabase {
@@ -177,17 +180,11 @@ public abstract class PolicyDatabase extends RoomDatabase {
         return newPolicy;
     }
 
-
-
-    public String[] getPolicySection(String content) {
-        String[] sectionList = content.split("(?<=\\n)(?=\\d+\\.)");
-        return sectionList;
-    }
-
     public static class UploadTask extends AsyncTask<Void, Void, Void> {
 
         private Context mContext;
         private PolicyDatabase mDatabase;
+        private ChatGPTClient chatGPTClient = new ChatGPTClient("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");
 
         FirebaseDatabase mFirebaseDatabase;
 
@@ -211,7 +208,10 @@ public abstract class PolicyDatabase extends RoomDatabase {
             List<Policy> policyList = mDatabase.mainDao().getAll();
             System.out.println("PolicyList size: " + policyList.size()); //size = 6
 
-            // Upload the data to Firebase
+            /**
+             * Upload policy information to Firebase
+              */
+
             DatabaseReference policyRef = mFirebaseDatabase.getReference("Policy");
 
             // Count number of children in policyRef
@@ -223,7 +223,7 @@ public abstract class PolicyDatabase extends RoomDatabase {
                     // Use the count variable here
                     if (count < policyList.size()) {
                         for (Policy item : policyList) {
-                            String [] policySection = mDatabase.getPolicySection(item.getContent());
+                            String [] policySection = item.getPolicySection(item.getContent());
                             //Get the ID of policy and set as the unique identifier for Policy child node in Firebase
                             policyRef.child(String.valueOf(item.getId())).setValue(item);
 
@@ -235,6 +235,45 @@ public abstract class PolicyDatabase extends RoomDatabase {
                             }
                             policyRef.child(String.valueOf(item.getId())).updateChildren(policy);
                         }
+
+                    }
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // Handle error
+                }
+            });
+            /**
+             * Upload vectors of policy information to Firebase
+             */
+            DatabaseReference vectorRef = mFirebaseDatabase.getReference("Vector");
+
+            // Count number of children in vectorRef
+            vectorRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    long countVector = dataSnapshot.getChildrenCount();
+
+                    // Use the count variable here
+                    if (countVector < policyList.size()) {
+                        for (Policy item : policyList) {
+                            String [] policySection = item.getPolicySection(item.getContent());
+
+                            new Thread(() -> {
+                                //Convert policy sections into vectors
+                                List<Embedding> policyEmbedding = chatGPTClient.createEmbeddings(Arrays.asList(policySection));
+
+                                //Create a Map object with all vectors
+                                Map<String, Object> vectors = new HashMap<>();
+                                for (int i = 1; i < policyEmbedding.size(); i++) {
+                                    vectors.put("content" + i, policyEmbedding.get(i));
+                                }
+                                //Add vectors to a new child
+                                vectorRef.child(String.valueOf(item.getId())).setValue(vectors);
+                            }).start();
+
+                        }
+
                     }
                 }
 
@@ -243,6 +282,7 @@ public abstract class PolicyDatabase extends RoomDatabase {
                     // Handle error
                 }
             });
+
 
 
 

@@ -5,7 +5,12 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.example.unswpolicieschatgpt.chatgptapi.ChatGPTClient;
+import com.theokanning.openai.embedding.Embedding;
+
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(tableName = "Policy", indices = {@Index(value = {"pdf_url"}, unique = true)})
 public class Policy {
@@ -16,8 +21,6 @@ public class Policy {
     private String pdf_url;
     @ColumnInfo(name = "title")
     private String title;
-    @ColumnInfo(name = "category")
-    private String category;
     @ColumnInfo(name = "purpose")
     private String purpose;
     @ColumnInfo(name = "scope")
@@ -63,10 +66,6 @@ public class Policy {
         this.title = title;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
     public void setPurpose(String purpose) {
         this.purpose = purpose;
     }
@@ -108,10 +107,6 @@ public class Policy {
         return title;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
     public String getPurpose() {
         return purpose;
     }
@@ -138,5 +133,20 @@ public class Policy {
 
     public String getResponsible_officer() {
         return responsible_officer;
+    }
+
+    /*public ArrayList<Embedding> getEmbeddings(ChatGPTClient chatGPTClient) {
+        ArrayList<Embedding> embeddings = new ArrayList<>();
+        embeddings.add(chatGPTClient.embedQuery(title));
+        embeddings.add(chatGPTClient.embedQuery(purpose));
+        embeddings.add(chatGPTClient.embedQuery(scope));
+        embeddings.add(chatGPTClient.embedQuery(contact_officer));
+        embeddings.add(chatGPTClient.embedQuery(responsible_officer));
+        return embeddings;
+    }*/
+
+    public String[] getPolicySection(String content) {
+        String[] sectionList = content.split("(?<=\\n)(?=\\d+\\.)");
+        return sectionList;
     }
 }
