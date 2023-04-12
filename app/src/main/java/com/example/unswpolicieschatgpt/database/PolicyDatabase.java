@@ -25,7 +25,9 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 //Add database entities
 @Database(entities = {Policy.class}, version = 2, exportSchema = false)
@@ -38,6 +40,11 @@ public abstract class PolicyDatabase extends RoomDatabase {
     //Create Dao
     public abstract PolicyDao mainDao();
 
+    /**
+     * List of policy document URLs
+     * @return
+     * @throws MalformedURLException
+     */
     public ArrayList<URL> getURLList() throws MalformedURLException {
         ArrayList<URL> urlList = new ArrayList<>();
         urlList.add(new URL("https://www.unsw.edu.au/content/dam/pdfs/governance/policy/2022-01-policies/assessmentdesignprocedure.pdf"));
@@ -212,11 +219,21 @@ public abstract class PolicyDatabase extends RoomDatabase {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     long count = dataSnapshot.getChildrenCount();
+
                     // Use the count variable here
                     if (count < policyList.size()) {
                         for (Policy item : policyList) {
+                            String [] policySection = mDatabase.getPolicySection(item.getContent());
                             //Get the ID of policy and set as the unique identifier for Policy child node in Firebase
                             policyRef.child(String.valueOf(item.getId())).setValue(item);
+
+                            //Add policy sections to Firebase child node
+                            Map<String, Object> policy = new HashMap<>();
+
+                            for (int i = 1; i < policySection.length; i++) {
+                                policy.put("content" + i, policySection[i]);
+                            }
+                            policyRef.child(String.valueOf(item.getId())).updateChildren(policy);
                         }
                     }
                 }
