@@ -9,7 +9,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import okhttp3.OkHttpClient;
+
 public class ChatGPTClient {
+
+
 
     private final OpenAiService openAiService;
 
@@ -17,14 +21,17 @@ public class ChatGPTClient {
         openAiService = new OpenAiService(apiKey);
     }
 
-    public void sendPrompt(String prompt) throws ExecutionException, InterruptedException {
+    public String getChatGPTResponse(String prompt) throws ExecutionException, InterruptedException {
+        //Set parameter for the GPT-3 API request
         CompletionRequest completionRequest = CompletionRequest.builder()
                 .prompt(prompt)
-                .model("ada")
+                .model("text-ada-001")
                 .echo(true)
                 .build();
-
-        openAiService.createCompletion(completionRequest).getChoices().forEach(System.out::println);
+        //Get the generated response text
+        String generatedText = openAiService.createCompletion(completionRequest).getChoices().get(0).getText();
+        //openAiService.createCompletion(completionRequest).getChoices().forEach(System.out::println);
+        return generatedText;
 
     }
 

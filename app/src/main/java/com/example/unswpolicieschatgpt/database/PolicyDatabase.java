@@ -184,7 +184,7 @@ public abstract class PolicyDatabase extends RoomDatabase {
 
         private Context mContext;
         private PolicyDatabase mDatabase;
-        private ChatGPTClient chatGPTClient = new ChatGPTClient("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");
+        private ChatGPTClient chatGPTClient = new ChatGPTClient("API_KEY");
 
         FirebaseDatabase mFirebaseDatabase;
 
