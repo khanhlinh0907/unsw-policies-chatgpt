@@ -1,9 +1,10 @@
 <resources>
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/UNSW_yellow</item>
-        <item name="colorPrimaryDark">@color/UNSW_yellow</item>
-        <item name="colorAccent">@color/teal_200</item>
+        <item name="colorPrimary">#FBE304</item>
+        <item name="colorPrimaryDark">#FBE304</item>
+        <item name="colorAccent">#FBE304</item>
+        <item name="android:windowLightStatusBar">true</item>
 
         <!-- Change the title text color of the top bar -->
         <item name="android:titleTextColor">@color/black</item>

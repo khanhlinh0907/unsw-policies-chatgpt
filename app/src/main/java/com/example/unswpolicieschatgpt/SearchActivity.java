@@ -1,7 +1,9 @@
 package com.example.unswpolicieschatgpt;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SearchActivity extends AppCompatActivity implements PolicyRecyclerViewInterface {
     private static final String TAG = "SearchActivity";
@@ -41,6 +44,12 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         setTitle("Browse UNSW Policy");
+
+        //Change colour of top action bar
+        Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.unsw_yellow)));
+
+        // Change text colour of top action bar
+        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"black\">" + getString(R.string.app_name) + "</font>"));
 
         //Get the handle to RecyclerView
         mRecyclerView = findViewById(R.id.rvList);

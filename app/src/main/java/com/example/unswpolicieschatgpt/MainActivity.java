@@ -1,6 +1,7 @@
 package com.example.unswpolicieschatgpt;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -9,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.MenuItem;
 import android.widget.Button;
+
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNav;
@@ -22,6 +25,9 @@ public class MainActivity extends AppCompatActivity {
         Button openPDF;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        //Change colour of top action bar
+        //Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.unsw_yellow)));
 
         //Bottom Navigation View
         bottomNav = findViewById(R.id.bottomNavigationView);
