@@ -1,63 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="#ffe600">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Welcome to UNSW \n Policies and Guidelines"
-            android:textSize="24sp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:layout_gravity="center_horizontal"/>
+        android:background="@color/white"
+        android:orientation="vertical">
 
         <ImageView
-            android:layout_width="250dp"
-            android:layout_height="250dp"
+            android:id="@+id/app_main_image"
+            android:layout_width="192dp"
+            android:layout_height="164dp"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/unsw_logo" />
+            android:layout_marginTop="2dp"
+            android:background="@drawable/app_main_image"
+            />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Explore UNSW"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="32dp"/>
+        <RelativeLayout
+            android:id="@+id/iv_chatbot_layout"
+            android:layout_width="match_parent"
+            android:layout_height="430dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/home_yellow_bg"
+            android:elevation="24dp">
 
-        <Button
-            android:id="@+id/openPDF"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="158dp"
-            android:layout_marginBottom="1dp"
-            android:text="Open PDF" />
+            <ImageView
+                android:id="@+id/iv_chatbot_icon"
+                android:layout_width="63dp"
+                android:layout_height="146dp"
+                android:src="@drawable/chatbot_icon" />
+
+            <TextView
+                android:id="@+id/tv_chatbot_welcome"
+                android:layout_width="220dp"
+                android:layout_height="240dp"
+                android:layout_below="@id/iv_chatbot_icon"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="-130dp"
+                android:background="@drawable/chatbot_welcome_textview_bg"
+                android:elevation="16dp"
+                android:gravity="center"
+                android:text="@string/hello_there"
+                android:textSize="16sp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_view_policies"
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:layout_below="@id/tv_chatbot_welcome"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/chatbot_welcome_textview_bg"
+                android:elevation="16dp"
+                android:text="@string/view_policies_or_guidelines"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_go_to_chatbot"
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:layout_below="@id/btn_view_policies"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/chatbot_welcome_textview_bg"
+                android:elevation="8dp"
+                android:text="@string/ask_me_a_question"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="@color/white"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:background="@drawable/custom_bottom_nav_bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintEnd_toEndOf="parent"
         app:menu="@menu/bottom_navigation_menu"
-        >
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
+        android:elevation="24dp"
+        app:itemIconSize="36dp"
+        app:labelVisibilityMode="labeled"
+        style="@style/CustomBottomNavigationView"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="24dp"
+        app:itemTextAppearanceActive="@style/BottomNavigation.Active"
+        app:itemTextAppearanceInactive="@style/BottomNavigation.Inactive"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

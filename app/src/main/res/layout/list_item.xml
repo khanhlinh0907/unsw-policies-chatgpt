@@ -1,50 +1,60 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:background="@color/white">
+    android:layout_height="wrap_content"
+    android:background="@android:color/white">
 
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="250dp"
-        android:layout_height="75dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="24dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/policy_rv_list_item_style"
-        android:text="Policy Name"
-        android:textAlignment="center"
-        android:gravity="center"
-        android:textSize="20dp"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.615" />
+    <RelativeLayout
+        android:layout_width="375dp"
+        android:layout_height="80dp"
+        android:layout_margin="8dp"
+        android:gravity="center_horizontal"
+        android:background="#D3D3D3"
+        android:elevation="16dp"
+        >
 
-    <TextView
-        android:id="@+id/tvName2"
-        android:layout_width="100dp"
-        android:layout_height="75dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="64dp"
+            android:background="@android:color/transparent"
+            android:text="@string/policy_title_here"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:elevation="16dp"/>
 
-        android:layout_marginEnd="8dp"
-        android:background="@drawable/policy_rv_list_item_style"
-        android:text="View \n policy >"
-        android:textAlignment="center"
-        android:gravity="center"
-        android:textSize="20dp"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/tvTitle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.983"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tvTitle"
-        app:layout_constraintVertical_bias="0.466" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvTitle"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="64dp"
+            android:background="@android:color/transparent"
+            android:text="@string/policy_description_here"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:elevation="16dp"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_right_arrow"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginBottom="0dp"
+            android:background="@drawable/rounded_rv_button_bg"
+            android:text=">"
+            android:textSize="36sp"
+            android:textAlignment="center"
+            android:textColor="@android:color/black" />
+
+    </RelativeLayout>
+
+</FrameLayout>

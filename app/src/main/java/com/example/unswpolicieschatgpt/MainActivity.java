@@ -13,6 +13,10 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNav;
 
+    Button btnViewPolicies;
+
+    Button btnGoToChatBot;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Button openPDF;
@@ -21,6 +25,10 @@ public class MainActivity extends AppCompatActivity {
 
         //Bottom Navigation View
         bottomNav = findViewById(R.id.bottomNavigationView);
+
+        //Buttons
+        btnViewPolicies = findViewById(R.id.btn_view_policies);
+        btnGoToChatBot = findViewById(R.id.btn_go_to_chatbot);
 
         /**
          * Set up Bottom Navigation View
@@ -48,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        openPDF = findViewById(R.id.openPDF);
+        //openPDF = findViewById(R.id.openPDF);
 
         /*openPDF.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,4 +136,5 @@ public class MainActivity extends AppCompatActivity {
 
          */
     }
+
 }

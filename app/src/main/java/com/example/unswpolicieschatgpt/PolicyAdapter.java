@@ -148,11 +148,12 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
 
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        private TextView mTitle;
+        private TextView mTitle, mDescription;
 
         public MyViewHolder(@NonNull View itemView, PolicyRecyclerViewInterface mInterface) {
             super(itemView);
             mTitle = itemView.findViewById(R.id.tvTitle);
+            mDescription = itemView.findViewById(R.id.tvDescription);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

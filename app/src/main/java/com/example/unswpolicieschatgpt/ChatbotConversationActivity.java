@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.example.unswpolicieschatgpt.chatgptapi.ChatGPTClient;
 import com.example.unswpolicieschatgpt.chatgptapi.VectorContent;
@@ -41,7 +42,7 @@ import java.util.Vector;
 
 public class ChatbotConversationActivity extends AppCompatActivity {
 
-    private Button mBackButton;
+    private ImageButton mBackButton;
     private Button mSendButton;
     private EditText mInputField;
     private RecyclerView mConvoRv;

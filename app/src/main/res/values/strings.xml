@@ -32,5 +32,12 @@
         <item>Teaching and Learning</item>
     </string-array>
     <string name="title_activity_chatbot_conversation">ChatbotActivityConversation</string>
+    <string name="view_policies_or_guidelines">View Policies or GuideLines</string>
+    <string name="ask_me_a_question">Ask me a question!</string>
+    <string name="hello_there_n_i_m_a_unsw_chatbot_n_trained_to_provide_you_with_n_any_information_n_about_unsw_s_policies_n_and_guidelines_n_n_my_core_features_can_n_be_accessed_below">Hello there! \n I\'m a UNSW Chatbot, \n trained to provide you with \n any information \n about UNSW\'s policies \n and guidelines. \n \n My core features can \n be accessed below.</string>
+    <string name="policy_title_here">Policy title here</string>
+    <string name="policy_description_here">Policy description here</string>
+    <string name="back_button">back button</string>
+    <string name="more_button">more button</string>
 
 </resources>
