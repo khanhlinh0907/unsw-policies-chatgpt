@@ -68,19 +68,22 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chatbot_conversation);
         setTitle("PolicyPilot");
 
-        //Change colour of top action bar
-        Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.unsw_yellow)));
-
-        // Change text colour of top action bar
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"black\">" + getString(R.string.app_name) + "</font>"));
-
-        // calling the action bar
+        //Get the ActionBar instance
         ActionBar actionBar = getSupportActionBar();
 
-        // showing the back button in action bar
+        //Set the back icon using the vector drawable resource ID
+        actionBar.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24);
+
+        //Show the back button in the ActionBar
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("UNSW PolicyPilot");
         //actionBar.setHomeAsUpIndicator(R.drawable.back_arrow);
+
+        //Change colour of top action bar
+        Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.unsw_yellow)));
+
+        //Change text colour of top action bar
+        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"black\">" + getString(R.string.app_name) + "</font>"));
 
         //Get the handle to RecyclerView
         mConvoRv = findViewById(R.id.conversationRV);
