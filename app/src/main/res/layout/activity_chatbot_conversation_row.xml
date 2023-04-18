@@ -38,14 +38,14 @@
 
         <ImageView
             android:id="@+id/botImage"
-            android:layout_width="77dp"
-            android:layout_height="79dp"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
             android:layout_marginEnd="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/botCard"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/chatbot_icon"
+            app:srcCompat="@drawable/app_main_image"
             tools:visibility="visible" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

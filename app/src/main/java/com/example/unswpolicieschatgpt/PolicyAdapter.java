@@ -88,7 +88,7 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
                     //Create a new ArrayList to add filtered policies
                     ArrayList<Policy> filteredList = new ArrayList<>();
                     for(Policy policy : mPolicies) {
-                        if(policy.getTitle().toLowerCase().contains(query.toLowerCase())) {
+                        if(policy.getTitle().toLowerCase().trim().contains(query.toLowerCase())) {
                             filteredList.add(policy);
                         }
                     }
@@ -177,12 +177,12 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
                 @Override
                 public int compare(Policy o1, Policy o2) {
                     if (sortMethod == SORT_METHOD_NAME) {
-                        return o1.getTitle().toLowerCase().compareTo(o2.getTitle().toLowerCase());
+                        return o1.getTitle().toLowerCase().trim().compareTo(o2.getTitle().toLowerCase().trim());
                     } else if (sortMethod == SORT_METHOD_NAME_REVERSE) {
-                        return o2.getTitle().toLowerCase().compareTo(o1.getTitle().toLowerCase());
+                        return o2.getTitle().toLowerCase().trim().compareTo(o1.getTitle().toLowerCase().trim());
                     }
                     // By default sort the list in ascending order
-                    return o1.getTitle().toLowerCase().compareTo(o2.getTitle().toLowerCase());
+                    return o1.getTitle().toLowerCase().trim().compareTo(o2.getTitle().toLowerCase().trim());
                 }
             });
         }

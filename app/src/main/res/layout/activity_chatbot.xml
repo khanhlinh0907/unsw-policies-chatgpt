@@ -52,29 +52,28 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvListChatBot"
-            android:layout_width="match_parent"
+            android:layout_width="398dp"
             android:layout_height="wrap_content" />
 
     </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
+        style="@style/CustomBottomNavigationView"
         android:layout_width="0dp"
         android:layout_height="64dp"
-        android:background="@drawable/custom_bottom_nav_bg"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:menu="@menu/bottom_navigation_menu"
-        android:elevation="24dp"
-        app:itemIconSize="36dp"
-        app:labelVisibilityMode="labeled"
-        style="@style/CustomBottomNavigationView"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/custom_bottom_nav_bg"
+        android:elevation="24dp"
+        app:itemIconSize="36dp"
         app:itemTextAppearanceActive="@style/BottomNavigation.Active"
         app:itemTextAppearanceInactive="@style/BottomNavigation.Inactive"
-        />
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_navigation_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

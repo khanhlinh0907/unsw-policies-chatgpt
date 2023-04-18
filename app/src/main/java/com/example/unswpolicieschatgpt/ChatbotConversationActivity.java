@@ -1,6 +1,7 @@
 package com.example.unswpolicieschatgpt;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -72,6 +74,14 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         // Change text colour of top action bar
         getSupportActionBar().setTitle(Html.fromHtml("<font color=\"black\">" + getString(R.string.app_name) + "</font>"));
 
+        // calling the action bar
+        ActionBar actionBar = getSupportActionBar();
+
+        // showing the back button in action bar
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("UNSW PolicyPilot");
+        //actionBar.setHomeAsUpIndicator(R.drawable.back_arrow);
+
         //Get the handle to RecyclerView
         mConvoRv = findViewById(R.id.conversationRV);
 
@@ -83,19 +93,9 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         //Create an Adapter instance with an ArrayList of Policy objects
         mConvoRv.setAdapter(adapter);
 
-        mBackButton = findViewById(R.id.backButton);
         mSendButton = findViewById(R.id.sendButton);
         mInputField = findViewById(R.id.message_input_field);
 
-        //Handles back button - returns user to chatbotActivity.
-
-        mBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), ChatBotActivity.class);
-                startActivity(intent);
-            }
-        });
 
         //Default message that starts every conversation.
 
@@ -153,6 +153,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         private String matchedPolicyId;
         private String matchedSectionId;
         private String policyTitle;
+
         private String pdf_url;
 
 
@@ -179,6 +180,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
             List<Double> highestScoreList = new ArrayList<>();
             List<Long> indexOfHighestScoreList = new ArrayList<>();
             List<String> policyIDList = new ArrayList<>();
+
             vectorRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -241,6 +243,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             policyTitle = (String) snapshot.child("title").getValue();
+                            System.out.println("Policy Title:" + policyTitle);
                             pdf_url = (String) snapshot.child("pdf_url").getValue();
                         }
 
@@ -260,8 +263,9 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                                     "Here is the user's query: " + userInput +
                                     "Context you have: " + response.trim() +
                                     "Policy title: " + policyTitle +
-                                    "Reply to user's query and provide them the policy title for further reference" +
-                                    "Ignore the context and no need to provide policy title if you think it's irrelevant to user's query.";
+                                    "Reply to user's query." +
+                                    "Add this sentence at the end only if the context is relevant to user's query: For more details please refer to" + policyTitle +
+                                    "Ignore the context and no need to provide the last sentence if you think it's irrelevant to user's query.";
 
                             new ChatGPTTask().execute(chatGPTPrompt);
                             System.out.println("ChatGPT Prompt: " + chatGPTPrompt);
@@ -381,5 +385,15 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         return highestSimilarity;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        backToChatbot();
+        return true;
+    }
+
+    private void backToChatbot() {
+        Intent intent = new Intent(getApplicationContext(), ChatBotActivity.class);
+        startActivity(intent);
+    }
 
 }

@@ -21,9 +21,6 @@ import java.util.List;
 public class ChatbotConversationAdapter extends RecyclerView.Adapter<ChatbotConversationAdapter.MyViewHolder> implements Filterable {
     private List<ConversationMessage> mConversation, mConversationFiltered;
 
-    public static final int SORT_METHOD_NAME = 1;
-    public static final int SORT_METHOD_NAME_REVERSE = 2;
-
     //PolicyAdapter constructor method
     public ChatbotConversationAdapter(List<ConversationMessage> conversation) {
         if (mConversation == null) {
@@ -119,45 +116,6 @@ public class ChatbotConversationAdapter extends RecyclerView.Adapter<ChatbotConv
     }
 
 
-    //Updated getFilter method for Spinner (includes search getFilter code)
-//    @Override
-//    public Filter getFilter() {
-//        return new Filter() {
-//            @Override
-//            protected FilterResults performFiltering(CharSequence charSequence) {
-//                String query = charSequence.toString();
-//                String selectedCategory = mSelectedCategory;
-//                List<Policy> filteredList = new ArrayList<>();
-//                if (selectedCategory.equalsIgnoreCase("All Categories")) {
-//                    // If "All Categories" is selected, show all policies that match the search query
-//                    for (Policy policy : mPolicies) {
-//                        if (policy.getName().toLowerCase().contains(query.toLowerCase())) {
-//                            filteredList.add(policy);
-//                        }
-//                    }
-//                } else {
-//                    // Otherwise, show policies that match both the search query and the selected category
-//                    for (Policy policy : mPolicies) {
-//                        if (policy.getName().toLowerCase().contains(query.toLowerCase())
-//                                && policy.getCategory().equalsIgnoreCase(selectedCategory)) {
-//                            filteredList.add(policy);
-//                        }
-//                    }
-//                }
-//                FilterResults filterResults = new FilterResults();
-//                filterResults.values = filteredList;
-//                return filterResults;
-//            }
-//
-//            @Override
-//            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-//                mPoliciesFiltered = (ArrayList<Policy>) filterResults.values;
-//                notifyDataSetChanged();
-//            }
-//        };
-//    }
-
-
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView mBotChat, mUserChat;
         private ConstraintLayout mUserLayout, mBotLayout;
@@ -177,34 +135,5 @@ public class ChatbotConversationAdapter extends RecyclerView.Adapter<ChatbotConv
         }
     }
 
-//    /**
-//     * Sort policy list by name
-//     * Use the Java Collections.sort() and Comparator methods
-//     * @param sortMethod
-//     */
-//    public void sort(final int sortMethod) {
-//        if (mConversationFiltered.size() > 0) {
-//            Collections.sort(mConversationFiltered, new Comparator<ConversationMessage>() {
-//                @Override
-//                public int compare(Policy o1, Policy o2) {
-//                    if (sortMethod == SORT_METHOD_NAME) {
-//                        return o1.getTitle().toLowerCase().compareTo(o2.getTitle().toLowerCase());
-//                    } else if (sortMethod == SORT_METHOD_NAME_REVERSE) {
-//                        return o2.getTitle().toLowerCase().compareTo(o1.getTitle().toLowerCase());
-//                    }
-//                    // By default sort the list in ascending order
-//                    return o1.getTitle().toLowerCase().compareTo(o2.getTitle().toLowerCase());
-//                }
-//            });
-//        }
-//        notifyDataSetChanged();
-//    }
-
-    //Add data to the adapter
-    public void setData(ArrayList<ConversationMessage> data) {
-        mConversation.clear();
-        mConversation.addAll(data);
-        notifyDataSetChanged();
-    }
 }
 

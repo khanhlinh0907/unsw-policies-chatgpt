@@ -182,16 +182,6 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
         startActivity(intent);
     }
 
-    /**
-     * Load PDF file to WebActivity when user taps into policy title
-     * @param
-     */
-    /*private void launchWebActivity(String policyId) {
-        Intent intent = new Intent(SearchActivity.this, WebActivity.class);
-        intent.putExtra(WebActivity.INTENT_MESSAGE, policyId);
-        startActivity(intent);
-    }*/
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();

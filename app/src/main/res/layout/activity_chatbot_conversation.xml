@@ -21,21 +21,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginEnd="8dp"
             android:layout_toStartOf="@+id/moreButton"
-            android:layout_toEndOf="@+id/backButton"
             app:srcCompat="@drawable/chatbot_heading" />
-
-        <ImageButton
-            android:id="@+id/backButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="32dp"
-            android:contentDescription="@string/back_button"
-            app:srcCompat="@drawable/icon_arrow_left" />
 
         <ImageButton
             android:id="@+id/moreButton"
@@ -56,8 +42,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/conversationRV"
-        android:layout_width="410dp"
-        android:layout_height="518dp"
+        android:layout_width="378dp"
+        android:layout_height="513dp"
         app:layout_constraintBottom_toTopOf="@+id/message_input_area"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

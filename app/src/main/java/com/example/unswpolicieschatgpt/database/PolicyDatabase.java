@@ -117,7 +117,7 @@ public abstract class PolicyDatabase extends RoomDatabase {
         //Note: Every PDF file page starts with a series of dash '-' so need to eliminate these
 
         String titleString = text.substring(97, text.indexOf("Page 1 of"));
-        title = titleString.replace(String.valueOf('-'), "");
+        title = titleString.replace(String.valueOf('-'), "").trim();
 
         /**
          * Find purpose, scope and content of the document

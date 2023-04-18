@@ -8,8 +8,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvList"
-        android:layout_width="407dp"
-        android:layout_height="592dp"
+        android:layout_width="376dp"
+        android:layout_height="601dp"
         android:layout_marginTop="76dp"
         android:layout_marginEnd="4dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -17,23 +17,22 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
+        style="@style/CustomBottomNavigationView"
         android:layout_width="0dp"
         android:layout_height="64dp"
-        android:background="@drawable/custom_bottom_nav_bg"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:menu="@menu/bottom_navigation_menu"
-        android:elevation="24dp"
-        app:itemIconSize="36dp"
-        app:labelVisibilityMode="labeled"
-        style="@style/CustomBottomNavigationView"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/custom_bottom_nav_bg"
+        android:elevation="24dp"
+        app:itemIconSize="36dp"
         app:itemTextAppearanceActive="@style/BottomNavigation.Active"
         app:itemTextAppearanceInactive="@style/BottomNavigation.Inactive"
-        />
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_navigation_menu" />
 
     <Spinner
         android:id="@+id/spinner_category"
@@ -49,15 +48,15 @@
 
     <TextView
         android:id="@+id/tvFilterCategory"
-        android:layout_width="144dp"
-        android:layout_height="64dp"
+        android:layout_width="180dp"
+        android:layout_height="58dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
-        android:text="Select \n Category: "
-        android:textSize="16dp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
         android:gravity="center"
+        android:text="Select Category: "
+        android:textColor="@color/black"
+        android:textSize="16dp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

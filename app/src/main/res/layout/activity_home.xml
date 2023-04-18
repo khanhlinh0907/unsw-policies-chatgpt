@@ -49,7 +49,7 @@
                 android:background="@drawable/chatbot_welcome_textview_bg"
                 android:elevation="16dp"
                 android:gravity="center"
-                android:text="Welcome to PolicyPilot! \n I am a chatbot, \n trained to provide you \n withany information \n about UNSW policies \n and guidelines \n \n My core features \n can be accessed below"
+                android:text="Welcome to PolicyPilot! \n I am a chatbot, \n trained to provide you \n with any information \n about UNSW policies \n and guidelines \n \n Let's get started!"
                 android:textSize="16sp" />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -84,22 +84,21 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
+        style="@style/CustomBottomNavigationView"
         android:layout_width="0dp"
         android:layout_height="64dp"
-        android:background="@drawable/custom_bottom_nav_bg"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:menu="@menu/bottom_navigation_menu"
-        android:elevation="24dp"
-        app:itemIconSize="36dp"
-        app:labelVisibilityMode="labeled"
-        style="@style/CustomBottomNavigationView"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/custom_bottom_nav_bg"
+        android:elevation="24dp"
+        app:itemIconSize="36dp"
         app:itemTextAppearanceActive="@style/BottomNavigation.Active"
         app:itemTextAppearanceInactive="@style/BottomNavigation.Inactive"
-        />
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_navigation_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

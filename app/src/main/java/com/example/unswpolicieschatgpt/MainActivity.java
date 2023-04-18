@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 
 
@@ -50,6 +51,23 @@ public class MainActivity extends AppCompatActivity {
         //Buttons
         btnViewPolicies = findViewById(R.id.btn_view_policies);
         btnGoToChatBot = findViewById(R.id.btn_go_to_chatbot);
+
+        //View policies or guidelines
+        btnViewPolicies.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnGoToChatBot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ChatBotActivity.class);
+                startActivity(intent);
+            }
+        });
 
         /**
          * Set up Bottom Navigation View
