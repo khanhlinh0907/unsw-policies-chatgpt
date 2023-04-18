@@ -36,6 +36,7 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
     // RecyclerView
     private RecyclerView mRecyclerView;
     private List<Policy> policyList = new ArrayList<>();
+    private PolicyDatabase policyDatabase;
     private PolicyAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
@@ -68,22 +69,13 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
         new Thread(new Runnable() {
             @Override
             public void run() {
-                PolicyDatabase policyDatabase = Room.databaseBuilder(SearchActivity.this,
-                        PolicyDatabase.class, "Policy_Database").build();
-                PolicyDao mainDao = policyDatabase.mainDao();
                 try {
+                    policyDatabase = Room.databaseBuilder(SearchActivity.this,
+                            PolicyDatabase.class, "Policy_Database").fallbackToDestructiveMigration().build();
                     policyDatabase.setupDatabase(SearchActivity.this);
-                    List<Policy> retrievedPolicyList = mainDao.getAll();
+                    List<Policy> retrievedPolicyList = policyDatabase.mainDao().getAll();
                     policyList.clear();
                     policyList.addAll(retrievedPolicyList);
-
-                    //Test policy section
-                    String testContent = retrievedPolicyList.get(0).getContent();
-                    String [] testPolicySection = policyDatabase.getPolicySection(testContent);
-                    for (int i = 0; i < testPolicySection.length; i++) {
-                        System.out.println("Section" + (i+1) + ": " + testPolicySection[i]);
-                    }
-
 
                     runOnUiThread(new Runnable() {
                         @Override

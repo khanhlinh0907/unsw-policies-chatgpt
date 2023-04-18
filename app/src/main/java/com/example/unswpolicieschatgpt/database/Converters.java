@@ -17,7 +17,7 @@ public class Converters {
     }
 
     @TypeConverter
-    public static String fromUrl(URL url) {
+    public static String fromUrl(String url) {
         return url == null ? null : url.toString();
     }
 }

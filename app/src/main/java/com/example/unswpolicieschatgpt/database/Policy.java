@@ -2,21 +2,25 @@ package com.example.unswpolicieschatgpt.database;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import java.net.URL;
+import com.example.unswpolicieschatgpt.chatgptapi.ChatGPTClient;
+import com.theokanning.openai.embedding.Embedding;
 
-@Entity
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity(tableName = "Policy", indices = {@Index(value = {"pdf_url"}, unique = true)})
 public class Policy {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
     @ColumnInfo(name = "pdf_url")
-    private URL pdf_url;
+    private String pdf_url;
     @ColumnInfo(name = "title")
     private String title;
-    @ColumnInfo(name = "category")
-    private String category;
     @ColumnInfo(name = "purpose")
     private String purpose;
     @ColumnInfo(name = "scope")
@@ -54,16 +58,12 @@ public class Policy {
         this.id = id;
     }
 
-    public void setPdf_url(URL pdf_url) {
+    public void setPdf_url(String pdf_url) {
         this.pdf_url = pdf_url;
     }
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
     }
 
     public void setPurpose(String purpose) {
@@ -99,16 +99,12 @@ public class Policy {
         return id;
     }
 
-    public URL getPdf_url() {
+    public String getPdf_url() {
         return pdf_url;
     }
 
     public String getTitle() {
         return title;
-    }
-
-    public String getCategory() {
-        return category;
     }
 
     public String getPurpose() {
@@ -137,5 +133,20 @@ public class Policy {
 
     public String getResponsible_officer() {
         return responsible_officer;
+    }
+
+    /*public ArrayList<Embedding> getEmbeddings(ChatGPTClient chatGPTClient) {
+        ArrayList<Embedding> embeddings = new ArrayList<>();
+        embeddings.add(chatGPTClient.embedQuery(title));
+        embeddings.add(chatGPTClient.embedQuery(purpose));
+        embeddings.add(chatGPTClient.embedQuery(scope));
+        embeddings.add(chatGPTClient.embedQuery(contact_officer));
+        embeddings.add(chatGPTClient.embedQuery(responsible_officer));
+        return embeddings;
+    }*/
+
+    public String[] getPolicySection(String content) {
+        String[] sectionList = content.split("(?<=\\n)(?=\\d+\\.)");
+        return sectionList;
     }
 }

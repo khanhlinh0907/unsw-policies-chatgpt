@@ -1,17 +1,31 @@
 package com.example.unswpolicieschatgpt;
 
+import android.content.Context;
 import android.content.Intent;
+
+import android.os.AsyncTask;
+
 import android.graphics.drawable.ColorDrawable;
+
 import android.os.Bundle;
 
+import com.example.unswpolicieschatgpt.database.Policy;
+import com.example.unswpolicieschatgpt.database.PolicyDatabase;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.view.MenuItem;
 import android.widget.Button;
 
+
+import java.util.List;
+
 import java.util.Objects;
+
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNav;
@@ -22,9 +36,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Button openPDF;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        PolicyDatabase.UploadTask task = new PolicyDatabase.UploadTask(this);
+        task.execute();
 
         //Change colour of top action bar
         //Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.unsw_yellow)));
@@ -61,86 +76,9 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        //openPDF = findViewById(R.id.openPDF);
-
-        /*openPDF.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), WebActivity.class);
-                intent.putExtra("pdf_url", "https://www.unsw.edu.au/content/dam/pdfs/governance/policy/2022-01-policies/assessmentdesignprocedure.pdf");
-
-                startActivity(intent);
-            }
-        });
-
-        /*
-        openPDF.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            PDFBoxResourceLoader.init(getApplicationContext());
-
-                            //Create DocumentDatabase
-                            PolicyDatabase database = Room.databaseBuilder(getApplicationContext(),
-                                    PolicyDatabase.class, "Document_Database").allowMainThreadQueries().build();
-                            PolicyDao policyDao = database.mainDao();
-                            //Add documents to Room Database
-                            ArrayList<URL> urlList = database.insertURLList();
-                            for (URL url : urlList) {
-                                PDFTextExtractor textExtractor = new PDFTextExtractor();
-                                Policy policy = textExtractor.PDFTextExtractor(MainActivity.this, url);
-                                policy.setPdf_url(url);
-                                policyDao.insert(policy);
-                            }
-
-                            //Get all documents in the database
-                            List<Policy> policyList = policyDao.getAll();
-
-
-                            //Test the DocumentDatabase
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    TextView docTitle = findViewById(R.id.docTitle);
-                                    //TextView purpose = findViewById(R.id.purpose);
-                                    TextView responsible_officer = findViewById(R.id.responsible_officer);
-                                    TextView contact_officer = findViewById(R.id.contact_officer);
-
-
-                                    Policy selectedDoc = policyList.get(0);
-                                    docTitle.setText(selectedDoc.getTitle());
-                                    //purpose.setText(selectedDoc.getPurpose());
-                                    responsible_officer.setText(selectedDoc.getResponsible_officer());
-                                    contact_officer.setText(selectedDoc.getContact_officer());
-                                }
-                            });
-
-                        } catch (MalformedURLException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-
-                }).start();
-            }
-            });
     }
 
 
-
-        binding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-         */
-    }
 
 }
+

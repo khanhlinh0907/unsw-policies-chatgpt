@@ -1,6 +1,7 @@
 package com.example.unswpolicieschatgpt.database;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.room.Database;
@@ -8,6 +9,15 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
+import com.example.unswpolicieschatgpt.SearchActivity;
+import com.example.unswpolicieschatgpt.chatgptapi.ChatGPTClient;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.theokanning.openai.embedding.Embedding;
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader;
 import com.tom_roush.pdfbox.pdmodel.PDDocument;
 import com.tom_roush.pdfbox.text.PDFTextStripper;
@@ -17,20 +27,27 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 //Add database entities
-@Database(entities = {Policy.class}, version = 1, exportSchema = false)
+@Database(entities = {Policy.class}, version = 3, exportSchema = false)
 @TypeConverters({Converters.class})
 
 public abstract class PolicyDatabase extends RoomDatabase {
     //Define database name
     private static final String DATABASE_NAME = "Document_Database";
-    //Create database instance
-    PolicyDatabase database;
 
     //Create Dao
     public abstract PolicyDao mainDao();
 
+    /**
+     * List of policy document URLs
+     * @return
+     * @throws MalformedURLException
+     */
     public ArrayList<URL> getURLList() throws MalformedURLException {
         ArrayList<URL> urlList = new ArrayList<>();
         urlList.add(new URL("https://www.unsw.edu.au/content/dam/pdfs/governance/policy/2022-01-policies/assessmentdesignprocedure.pdf"));
@@ -42,6 +59,32 @@ public abstract class PolicyDatabase extends RoomDatabase {
         return urlList;
     }
 
+    public void setupDatabase(Context context) throws MalformedURLException {
+        //Create database instance
+        PolicyDatabase mDatabase = Room.databaseBuilder(context,
+                PolicyDatabase.class, "Policy_Database").fallbackToDestructiveMigration().build();
+        mDatabase.clearAllTables();
+        ArrayList<URL> urlList = mDatabase.getURLList();
+        for (URL url: urlList) {
+            //Load PDF into text
+            String pdfText = mDatabase.loadPDF(url, context);
+            //Create new Policy from text
+            Policy newPolicy = mDatabase.getPolicyFromPDF(pdfText);
+            //Set URL to policy
+            newPolicy.setPdf_url(String.valueOf(url));
+            Log.d("PDF_URL", "URL for policy " + newPolicy.getTitle() + " set to " + newPolicy.getPdf_url());
+            //Add new policy to Room Database
+            //Check if a policy with the same PDF URL already exists in the database
+            Policy existingPolicy = mDatabase.mainDao().getByPdfUrl(String.valueOf(url));
+            if (existingPolicy != null) {
+                Log.d("POLICY_INSERT", "Policy with PDF URL " + url + " already exists in database");
+            } else {
+                //Insert new policy into Room Database
+                mDatabase.mainDao().insert(newPolicy);
+                Log.d("POLICY_INSERT", "Added new policy to Room database");
+            }
+        }
+    }
     public String loadPDF(URL pdf_url, Context context) {
         PDFBoxResourceLoader.init(context);
 
@@ -73,7 +116,7 @@ public abstract class PolicyDatabase extends RoomDatabase {
         //Find title;
         //Note: Every PDF file page starts with a series of dash '-' so need to eliminate these
 
-        String titleString = text.substring(96, text.indexOf("Page 1 of"));
+        String titleString = text.substring(97, text.indexOf("Page 1 of"));
         title = titleString.replace(String.valueOf('-'), "");
 
         /**
@@ -137,26 +180,118 @@ public abstract class PolicyDatabase extends RoomDatabase {
         return newPolicy;
     }
 
-    public void setupDatabase(Context context) throws MalformedURLException {
-        //Create database instance
-        PolicyDatabase database = Room.databaseBuilder(context,
-                PolicyDatabase.class, "Policy_Database").build();
-        ArrayList<URL> urlList = database.getURLList();
-        for (URL url: urlList) {
-            //Load PDF into text
-            String pdfText = database.loadPDF(url, context);
-            //Create new Policy from text
-            Policy newPolicy = database.getPolicyFromPDF(pdfText);
-            //Set URL to policy
-            newPolicy.setPdf_url(url);
-            Log.d("PDF_URL", "URL for policy " + newPolicy.getTitle() + " set to " + newPolicy.getPdf_url());
-            //Add new policy to Room Database
-            database.mainDao().insert(newPolicy);
-        }
-    }
+    public static class UploadTask extends AsyncTask<Void, Void, Void> {
 
-    public String[] getPolicySection(String content) {
-        String[] sectionList = content.split("(?<=\\n)(?=\\d+\\.)");
-        return sectionList;
+        private Context mContext;
+        private PolicyDatabase mDatabase;
+        private ChatGPTClient chatGPTClient = new ChatGPTClient("API_KEY");
+
+        FirebaseDatabase mFirebaseDatabase;
+
+        public UploadTask(Context context) {
+            mContext = context;
+            //mDatabase = database;
+            FirebaseApp.initializeApp(context);
+            mFirebaseDatabase = FirebaseDatabase.getInstance("https://unswpolicychatbot-default-rtdb.asia-southeast1.firebasedatabase.app/");
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            // Get the data from the Room database
+            PolicyDatabase mDatabase = Room.databaseBuilder(mContext,
+                    PolicyDatabase.class, "Policy_Database").fallbackToDestructiveMigration().build();
+            try {
+                mDatabase.setupDatabase(mContext);
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+            List<Policy> policyList = mDatabase.mainDao().getAll();
+
+            /**
+             * Upload policy information to Firebase
+              */
+
+            DatabaseReference policyRef = mFirebaseDatabase.getReference("Policy");
+
+            // Count number of children in policyRef
+            policyRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    long count = dataSnapshot.getChildrenCount();
+
+                    // Use the count variable here
+                    if (count < policyList.size()) {
+                        for (Policy item : policyList) {
+                            String [] policySection = item.getPolicySection(item.getContent());
+                            //Get the ID of policy and set as the unique identifier for Policy child node in Firebase
+                            policyRef.child(String.valueOf(item.getId())).setValue(item);
+
+                            //Add policy sections to Firebase child node
+                            Map<String, Object> policy = new HashMap<>();
+
+                            for (int i = 1; i < policySection.length; i++) {
+                                policy.put("content" + i, policySection[i]);
+                            }
+                            policyRef.child(String.valueOf(item.getId())).updateChildren(policy);
+                        }
+
+                    }
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // Handle error
+                }
+            });
+            /**
+             * Upload vectors of policy information to Firebase
+             */
+            DatabaseReference vectorRef = mFirebaseDatabase.getReference("Vector");
+
+            // Count number of children in vectorRef
+            vectorRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    long countVector = dataSnapshot.getChildrenCount();
+
+                    // Use the count variable here
+                    if (countVector < policyList.size()) {
+                        for (Policy item : policyList) {
+                            String [] policySection = item.getPolicySection(item.getContent());
+
+                            new Thread(() -> {
+                                //Convert policy sections into vectors
+                                List<Embedding> policyEmbedding = chatGPTClient.createEmbeddings(Arrays.asList(policySection));
+
+                                //Create a Map object with all vectors
+                                Map<String, Object> vectors = new HashMap<>();
+                                for (int i = 1; i < policyEmbedding.size(); i++) {
+                                    vectors.put("content" + i, policyEmbedding.get(i));
+                                }
+                                //Add vectors to a new child
+                                vectorRef.child(String.valueOf(item.getId())).setValue(vectors);
+                            }).start();
+
+                        }
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // Handle error
+                }
+            });
+
+
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            // Update the UI here if necessary
+        }
     }
 }
