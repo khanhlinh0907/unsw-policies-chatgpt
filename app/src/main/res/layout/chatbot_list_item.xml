@@ -17,10 +17,10 @@
 
         <TextView
             android:id="@+id/tvTopic"
-            android:layout_width="256dp"
+            android:layout_width="222dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="1dp"
-            android:layout_marginTop="2dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="12dp"
             android:layout_marginEnd="64dp"
             android:background="@android:color/transparent"
             android:text="Chat Message Topic"
@@ -33,7 +33,7 @@
             android:layout_width="256dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/tvTopic"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="64dp"
             android:background="@android:color/transparent"
@@ -44,32 +44,32 @@
 
         <TextView
             android:id="@+id/tvDate"
-            android:layout_width="wrap_content"
+            android:layout_width="74dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
+            android:layout_alignTop="@+id/tvLastMessage"
             android:layout_alignParentEnd="true"
             android:layout_marginStart="1dp"
-            android:layout_marginTop="7dp"
-            android:layout_marginEnd="18dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="5dp"
+            android:elevation="16dp"
             android:text="01/01/2023"
             android:textColor="#000000"
-            android:textSize="20sp"
-            android:elevation="16dp"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/tvTime"
-            android:layout_width="84dp"
+            android:layout_width="112dp"
             android:layout_height="wrap_content"
             android:layout_alignStart="@+id/tvDate"
-            android:layout_alignTop="@+id/tvLastMessage"
             android:layout_alignEnd="@+id/tvDate"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="2dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="-7dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="3dp"
             android:elevation="16dp"
             android:text="00:00"
             android:textColor="#000000"
-            android:textSize="20sp" />
+            android:textSize="16sp" />
 
     </RelativeLayout>
 
