@@ -206,7 +206,6 @@ public abstract class PolicyDatabase extends RoomDatabase {
                 throw new RuntimeException(e);
             }
             List<Policy> policyList = mDatabase.mainDao().getAll();
-            System.out.println("PolicyList size: " + policyList.size()); //size = 6
 
             /**
              * Upload policy information to Firebase

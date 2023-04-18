@@ -48,20 +48,12 @@ public class ChatbotConversationActivity extends AppCompatActivity {
     private ArrayList<ConversationMessage> mConversation = new ArrayList<>();;
 
     private ChatGPTClient chatGPTClient;
-    public static final MediaType JSON
-            = MediaType.get("application/json; charset=utf-8");
-
-    //Firebase Database
-    private DatabaseReference databaseReference;
-
-    private String [] testPolicySection;
-    private List <Embedding> sectionEmbedding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatbot_conversation);
-        setTitle("Chatbot");
+        setTitle("PolicyPilot");
 
         //Get the handle to RecyclerView
         mConvoRv = findViewById(R.id.conversationRV);
@@ -78,7 +70,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         mSendButton = findViewById(R.id.sendButton);
         mInputField = findViewById(R.id.message_input_field);
 
-        //Handles back button - returns user to chabotActivity.
+        //Handles back button - returns user to chatbotActivity.
 
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,7 +83,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         //Default message that starts every conversation.
 
         mConversation.add(new ConversationMessage("BOT", "Hello there. " +
-                "I'm a UNSWer chatbot. How can I help you today?"));
+                "I'm UNSW PolicyPilot who will guide you through UNSW policies & guidelines. How can I help you today?"));
         adapter.notifyDataSetChanged();
 
         //Code testing the ChatGPT API library.
@@ -111,8 +103,6 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
                     //Clears input text field.
                     mInputField.setText("");
-
-                    //mConversation.add(new ConversationMessage("BOT", "Sorry this is my fast day on the job. Let me ask my manager..."));
 
                     //Starts semantic search process.
                     SemanticThread semanticThread = new SemanticThread(userInput, token);
@@ -145,7 +135,9 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         private Embedding embedInput;
         private String matchedPolicyId;
         private String matchedSectionId;
-        private String chatGPTResponse;
+        private String policyTitle;
+        private String pdf_url;
+
 
         public SemanticThread(String userInput, String openAIKey) {
             this.userInput = userInput;
@@ -184,11 +176,10 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                         for (DataSnapshot contentSnapshot : policySnapshot.getChildren()) {
                             String contentId = contentSnapshot.getKey();
                             ArrayList<Double> embedding = (ArrayList<Double>) contentSnapshot.child("embedding").getValue();
-                            System.out.println("Content ID: " + contentId + ", Embedding: " + embedding);
+
                             //Retrieve the INDEX of embeddings
                             //This index will be used to retrieve the corresponding index of policy text
                             Long embeddingIndex = (Long) contentSnapshot.child("index").getValue();
-                            System.out.println("Embedding Index: " + embeddingIndex);
                             embeddingList.add(embedding);
                             embeddingIndexList.add(embeddingIndex);
 
@@ -205,10 +196,6 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                         //Add the actual index of policy section with the highest score
                         indexOfHighestScoreList.add(indexHighestScoreOfSingleDocument);
 
-                        System.out.println("PolicyID" + policyId + "has the highest similarity score of " + highestScoreOfSingleDocument);
-                        System.out.println("Firebase Index of the highest score of " + policyId + "is " + firebaseIndexHighestScoreOfSingleDocument);
-                        System.out.println("Actual index of the highest score of " + policyId + "is " + indexHighestScoreOfSingleDocument);
-
                     }
                     /**
                      * Find the highest similarity score of all documents
@@ -223,15 +210,28 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                             indexHighestScore = i;
                         }
                     }
-                    System.out.println("Highest Vector of all documents: " + highestVector);
-                    System.out.println("Policy index of the highest vector: " + indexHighestScore);
                     //Find matched policyID
                     matchedPolicyId = policyIDList.get(indexHighestScore);
                     System.out.println("Matched PolicyID: " + matchedPolicyId);
                     matchedSectionId = String.valueOf(indexOfHighestScoreList.get(indexHighestScore));
                     System.out.println("Matched PolicySection: content" + matchedSectionId);
 
+
                     DatabaseReference policyRef = mFirebaseDatabase.getReference("Policy");
+
+                    //Get policy title
+                    policyRef.child(matchedPolicyId).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            policyTitle = (String) snapshot.child("title").getValue();
+                            pdf_url = (String) snapshot.child("pdf_url").getValue();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
                     /**
                      * Find the matching content of the highest similarity vector
                      */
@@ -239,15 +239,15 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             String response = (String) dataSnapshot.getValue();
-                            String chatGPTPrompt = "Now you are UNSW AI Assistant. You are helpful and friendly. " +
+                            String chatGPTPrompt = "Now you are UNSW AI Assistant." +
                                     "Here is the user's query: " + userInput +
-                                    "Here is the context you have: " + response +
-                                    "Please reply to user's query.";
+                                    "Context you have: " + response.trim() +
+                                    "Policy title: " + policyTitle +
+                                    "Reply to user's query and provide them the policy title for further reference" +
+                                    "Ignore the context and no need to provide policy title if you think it's irrelevant to user's query.";
 
                             new ChatGPTTask().execute(chatGPTPrompt);
                             System.out.println("ChatGPT Prompt: " + chatGPTPrompt);
-
-                            callAPI(chatGPTPrompt);
                         }
 
                         @Override
@@ -265,33 +265,6 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
         }
 
-
-
-
-
-
-        private void getChatGPTResponse (String response, ChatGPTCallback callback) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    String chatGPTPrompt = "Now you are UNSW AI Assistant. You are helpful and friendly. " +
-                            "Here is the user's query: " + userInput +
-                            "Here is the context you have: " + response +
-                            "Please reply to user's query.";
-                    try {
-                        chatGPTResponse = chatGPTClient.getChatGPTResponse(chatGPTPrompt);
-                        System.out.println("ChatGPT Prompt: " + chatGPTPrompt);
-                        callback.onChatGPTResponse(chatGPTResponse);
-                        System.out.println("Response: " + chatGPTResponse);
-                    } catch (ExecutionException e) {
-                        throw new RuntimeException(e);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }).start();
-        }
-
         /**
          * Solution 1: ChatGPTTask
          * Error: It prints out the prompt instead of ChatGPT response
@@ -305,14 +278,13 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                 // Call the chatGPTClient to get the response
                 try {
                     response = chatGPTClient.getChatGPTResponse(prompt);
-                    System.out.println("Response from ChatGPTTask background: " + response);
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
-                return response;
+                return response.trim();
             }
 
             @Override
@@ -320,16 +292,19 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                 // Update the UI with the generated response
                 mConversation.add(new ConversationMessage("BOT", response));
                 adapter.notifyDataSetChanged();
-                System.out.println("Response from UI: " + response);
+                //displayResponse("Do you have any other questions?");
+
+
             }
         }
 
 
         /**
          * Update UI
+         *
          * @param response
          */
-        private void displayChatGPTResponse(final String response) {
+        private void displayResponse(final String response) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -338,78 +313,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                 }
             });
         }
-
-        /**
-         * Solution 2: From Youtube tutorial
-         * Error: Response.code = 400 -- error: request sending to openai invalid
-         */
-
-        void callAPI(String prompt) {
-            //okhttp
-
-            JSONObject jsonBody = new JSONObject();
-            try {
-                jsonBody.put("model", "text-davinci-003");
-                jsonBody.put("prompt", prompt);
-                jsonBody.put("max_tokens", 4000);
-                jsonBody.put("temperature", 0);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            RequestBody body = RequestBody.create(jsonBody.toString(), JSON);
-            Request request = new Request.Builder()
-                    .url("https://api.openai.com/v1/completions")
-                    .header("Authorization", "Bearer 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")
-                    .post(body)
-                    .build();
-
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    //mConversation.add(new ConversationMessage("BOT", "Failed to load response due to " + e.getMessage()));
-                    //adapter.notifyDataSetChanged();
-                    System.out.println("Bot: Failed to load response due to " + e.getMessage());
-                }
-
-                @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                    System.out.println("Response code: " + response.code());
-                    if (response.isSuccessful()) {
-                        JSONObject jsonObject = null;
-
-                        try {
-                            jsonObject = new JSONObject(response.body().string());
-                            JSONArray jsonArray = jsonObject.getJSONArray("choices");
-                            String result = jsonArray.getJSONObject(0).getString("text");
-                            System.out.println("Result: " + response.body().string());
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mConversation.add(new ConversationMessage("BOT", result.trim()));
-                                    adapter.notifyDataSetChanged();
-                                    System.out.println("Result given: " + result);
-                                }
-                            });
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-
-                    } else {
-                        System.out.println("On Response: Failed to load response");
-                        //mConversation.add(new ConversationMessage("BOT", "Failed to load response due to " + response.body().toString()));
-                        //adapter.notifyDataSetChanged();
-                    }
-                }
-            });
-        }
     }
-
-    public interface ChatGPTCallback {
-        void onChatGPTResponse(String response);
-    }
-
 
                 /**
      * Cosine Similarity Function

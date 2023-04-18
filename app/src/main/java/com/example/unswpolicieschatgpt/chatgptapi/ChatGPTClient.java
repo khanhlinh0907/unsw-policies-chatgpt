@@ -25,9 +25,12 @@ public class ChatGPTClient {
         //Set parameter for the GPT-3 API request
         CompletionRequest completionRequest = CompletionRequest.builder()
                 .prompt(prompt)
-                .model("text-ada-001")
-                .echo(true)
+                .model("text-davinci-003")
+                .echo(false)
+                .maxTokens(500)
+                .temperature(0.0)
                 .build();
+
         //Get the generated response text
         String generatedText = openAiService.createCompletion(completionRequest).getChoices().get(0).getText();
         //openAiService.createCompletion(completionRequest).getChoices().forEach(System.out::println);
