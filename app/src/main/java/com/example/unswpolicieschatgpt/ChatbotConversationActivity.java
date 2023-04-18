@@ -14,11 +14,13 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.example.unswpolicieschatgpt.chatgptapi.ChatGPTClient;
 import com.google.firebase.FirebaseApp;
@@ -71,12 +73,21 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         //Get the ActionBar instance
         ActionBar actionBar = getSupportActionBar();
 
+        //Set the title and center align it
+        TextView titleTextView = new TextView(this);
+        titleTextView.setText("UNSW PolicyPilot Chatbot");
+        titleTextView.setTextSize(24);
+        titleTextView.setTextColor(getResources().getColor(R.color.black));
+        titleTextView.setGravity(Gravity.CENTER);
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(titleTextView);
+
         //Set the back icon using the vector drawable resource ID
         actionBar.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24);
 
         //Show the back button in the ActionBar
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("UNSW PolicyPilot");
+        actionBar.setTitle("UNSW PolicyPilot Chatbot");
         //actionBar.setHomeAsUpIndicator(R.drawable.back_arrow);
 
         //Change colour of top action bar
