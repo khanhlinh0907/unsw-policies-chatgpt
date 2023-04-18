@@ -167,7 +167,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot policySnapshot : dataSnapshot.getChildren()) {
                         String policyId = policySnapshot.getKey();
-                        System.out.println("PolicyID: " + policyId);
+
                         policyIDList.add(policyId);
                         List<List<Double>> embeddingList = new ArrayList<>();
                         List<Long> embeddingIndexList = new ArrayList<>();
@@ -360,7 +360,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         }
         highestSimilarity.add(highestSimilarityScore);
         highestSimilarity.add(highestIndex);
-        System.out.println("Highest Similarity: " + highestSimilarityScore);
+
         return highestSimilarity;
     }
 
