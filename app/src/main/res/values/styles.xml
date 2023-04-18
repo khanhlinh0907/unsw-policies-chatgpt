@@ -1,0 +1,54 @@
+<resources>
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#FBE304</item>
+        <item name="colorPrimaryDark">#FBE304</item>
+        <item name="colorAccent">#FBE304</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <!-- Change the title text color of the top bar -->
+        <item name="android:titleTextColor">@color/black</item>
+        <!-- Color of the navigation bar. -->
+        <item name="android:navigationBarColor">@color/black</item>
+        <!-- Background color of the bottom navigation bar. -->
+        <item name="backgroundTint">@color/black</item>
+        <!-- Color of the icons on the bottom navigation bar. -->
+        <item name="itemIconTint">@color/white</item>
+        <!-- Color of the text labels on the bottom navigation bar. -->
+        <item name="itemTextColor">@color/white</item>
+    </style>
+
+    <!-- Define the style for the action bar -->
+    <style name="MyActionBar" parent="@style/Widget.MaterialComponents.ActionBar.Solid">
+        <!-- Add any additional attributes for the action bar style -->
+    </style>
+
+    <!-- Define the style for white ChatBot action bar -->
+    <style name="ChatBotWhiteActionBar" parent="@style/Widget.MaterialComponents.ActionBar.Solid">
+        <item name="android:background">@color/white</item>
+    </style>
+
+    <!-- Bottom Navigation text appearance -->
+    <style name="BottomNavigation.Active" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="BottomNavigation.Inactive" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="CustomBottomNavigationView" parent="Widget.Design.BottomNavigationView">
+        <item name="android:background">@drawable/custom_bottom_nav_bg</item>
+        <item name="itemBackground">@null</item>
+        <item name="itemIconTint">@color/unsw_yellow</item>
+        <item name="itemTextColor">@color/unsw_yellow</item>
+        <item name="labelVisibilityMode">labeled</item>
+    </style>
+
+    <style name="circleImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+
+</resources>

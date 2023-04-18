@@ -4,14 +4,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
+import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 
 import java.net.URL;
+import java.util.Objects;
 
 public class WebActivity extends AppCompatActivity {
     public static final String INTENT_MESSAGE = "intent_message";
@@ -19,10 +24,29 @@ public class WebActivity extends AppCompatActivity {
 
     String policy_url;
 
+    Button backToSearch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
+
+        backToSearch = findViewById(R.id.backToSearchButton);
+        backToSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(WebActivity.this, SearchActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        /*
+        Change colour of top action bar
+         */
+        Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.unsw_yellow)));
+
+        // Change text colour of top action bar
+        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"black\">" + getString(R.string.app_name) + "</font>"));
 
         /**
          * Get the intent that started the activity
@@ -79,4 +103,6 @@ public class WebActivity extends AppCompatActivity {
             webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         }
     }
+
+
 }

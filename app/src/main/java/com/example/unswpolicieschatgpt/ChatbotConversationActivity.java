@@ -8,9 +8,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
+import android.text.Html;
+import android.util.Log;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.example.unswpolicieschatgpt.chatgptapi.ChatGPTClient;
 import com.google.firebase.FirebaseApp;
@@ -28,6 +34,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import java.util.concurrent.ExecutionException;
 
 import okhttp3.Call;
@@ -38,9 +45,13 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import java.util.Map;
+import java.util.Objects;
+import java.util.Vector;
+
 public class ChatbotConversationActivity extends AppCompatActivity {
 
-    private Button mBackButton;
+    private ImageButton mBackButton;
     private Button mSendButton;
     private EditText mInputField;
     private RecyclerView mConvoRv;
@@ -54,6 +65,12 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatbot_conversation);
         setTitle("PolicyPilot");
+
+        //Change colour of top action bar
+        Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.unsw_yellow)));
+
+        // Change text colour of top action bar
+        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"black\">" + getString(R.string.app_name) + "</font>"));
 
         //Get the handle to RecyclerView
         mConvoRv = findViewById(R.id.conversationRV);
