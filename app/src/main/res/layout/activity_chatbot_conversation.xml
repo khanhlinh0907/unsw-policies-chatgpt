@@ -56,8 +56,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/conversationRV"
-        android:layout_width="385dp"
-        android:layout_height="564dp"
+        android:layout_width="410dp"
+        android:layout_height="518dp"
         app:layout_constraintBottom_toTopOf="@+id/message_input_area"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
