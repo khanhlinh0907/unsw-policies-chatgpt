@@ -6,7 +6,7 @@
 
     <!-- Border color and width -->
     <stroke
-        android:width="8dp"
+        android:width="3dp"
         android:color="@color/black" />
 
     <!-- Rounded corners -->

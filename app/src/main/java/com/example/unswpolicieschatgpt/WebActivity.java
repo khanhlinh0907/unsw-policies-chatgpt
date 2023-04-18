@@ -8,10 +8,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 
 import java.net.URL;
 import java.util.Objects;
@@ -22,10 +24,21 @@ public class WebActivity extends AppCompatActivity {
 
     String policy_url;
 
+    Button backToSearch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
+
+        backToSearch = findViewById(R.id.backToSearchButton);
+        backToSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(WebActivity.this, SearchActivity.class);
+                startActivity(intent);
+            }
+        });
 
         /*
         Change colour of top action bar
@@ -90,4 +103,6 @@ public class WebActivity extends AppCompatActivity {
             webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         }
     }
+
+
 }
