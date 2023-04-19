@@ -4,13 +4,10 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Html;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,20 +47,6 @@ public class ChatBotActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatbot);
-
-        //Get the ActionBar instance
-        ActionBar actionBar = getSupportActionBar();
-
-        //actionBar.setTitle("UNSW PolicyPilot Chatbot");
-
-        //Set the title and center align it
-        TextView titleTextView = new TextView(this);
-        titleTextView.setText("UNSW PolicyPilot Chatbot");
-        titleTextView.setTextSize(24);
-        titleTextView.setTextColor(getResources().getColor(R.color.black));
-        titleTextView.setGravity(Gravity.CENTER);
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        actionBar.setCustomView(titleTextView);
 
         mRecyclerView = findViewById(R.id.rvListChatBot);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());

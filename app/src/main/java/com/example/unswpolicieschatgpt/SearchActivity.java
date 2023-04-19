@@ -5,7 +5,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,9 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,19 +45,6 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         setTitle("Browse UNSW Policy");
-
-        //Get the ActionBar instance
-        ActionBar actionBar = getSupportActionBar();
-        //actionBar.setTitle("UNSW PolicyPilot Search");
-
-        //Set the title and center align it
-        TextView titleTextView = new TextView(this);
-        titleTextView.setText("UNSW PolicyPilot Search");
-        titleTextView.setTextSize(24);
-        titleTextView.setTextColor(getResources().getColor(R.color.black));
-        titleTextView.setGravity(Gravity.CENTER);
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        actionBar.setCustomView(titleTextView);
 
         //Change colour of top action bar
         Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.unsw_yellow)));
