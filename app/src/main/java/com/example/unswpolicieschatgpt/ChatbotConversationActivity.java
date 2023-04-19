@@ -14,11 +14,13 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.example.unswpolicieschatgpt.chatgptapi.ChatGPTClient;
 import com.google.firebase.FirebaseApp;
@@ -68,14 +70,30 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chatbot_conversation);
         setTitle("PolicyPilot");
 
+        // calling the action bar
+        ActionBar actionBar = getSupportActionBar();
+
+        // showing the back button in action bar
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        actionBar.setTitle("UNSW PolicyPilot");
+        //Set the back icon using the vector drawable resource ID
+        actionBar.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24);
+
+        //Set the title and center align it
+        TextView titleTextView = new TextView(this);
+        titleTextView.setText("UNSW PolicyPilot Chatbot");
+        titleTextView.setTextSize(24);
+        titleTextView.setTextColor(getResources().getColor(R.color.black));
+        titleTextView.setGravity(Gravity.CENTER);
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(titleTextView);
+
+
         //Change colour of top action bar
         Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.unsw_yellow)));
 
-        // Change text colour of top action bar
         getSupportActionBar().setTitle(Html.fromHtml("<font color=\"black\">" + getString(R.string.app_name) + "</font>"));
-
-        // calling the action bar
-        ActionBar actionBar = getSupportActionBar();
 
         // showing the back button in action bar
         actionBar.setDisplayHomeAsUpEnabled(true);
