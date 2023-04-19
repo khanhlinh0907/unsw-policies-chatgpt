@@ -20,7 +20,7 @@
     <item
         android:id="@+id/chatbot"
         android:enabled="true"
-        android:icon="@drawable/chatbot_icon"
+        android:icon="@drawable/chatbot_icon_yellow"
         android:title="@string/nav_chatbot"
         app:itemIconSize="4dp"
         app:showAsAction="always" />
