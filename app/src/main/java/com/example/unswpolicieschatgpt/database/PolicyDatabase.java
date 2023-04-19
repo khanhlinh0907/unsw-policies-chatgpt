@@ -116,8 +116,8 @@ public abstract class PolicyDatabase extends RoomDatabase {
         //Find title;
         //Note: Every PDF file page starts with a series of dash '-' so need to eliminate these
 
-        String titleString = text.substring(97, text.indexOf("Page 1 of"));
-        title = titleString.replace(String.valueOf('-'), "").trim();
+        String titleString = text.substring(0, text.indexOf("Page 1 of"));
+        title = titleString.replaceAll("^\\p{Pc}+", "").trim();
 
         /**
          * Find purpose, scope and content of the document
@@ -175,7 +175,7 @@ public abstract class PolicyDatabase extends RoomDatabase {
             parent_doc = null;
         }
 
-        Policy newPolicy = new Policy(title, purpose, scope, content, responsible_officer, contact_officer, parent_doc);
+        Policy newPolicy = new Policy(title, purpose, scope, content, contact_officer, responsible_officer, parent_doc);
 
         return newPolicy;
     }
@@ -184,7 +184,7 @@ public abstract class PolicyDatabase extends RoomDatabase {
 
         private Context mContext;
         private PolicyDatabase mDatabase;
-        private ChatGPTClient chatGPTClient = new ChatGPTClient("API_KEY");
+        private ChatGPTClient chatGPTClient = new ChatGPTClient("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");
 
         FirebaseDatabase mFirebaseDatabase;
 

@@ -30,11 +30,9 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
 
     //PolicyAdapter constructor method
     public PolicyAdapter(List<Policy> policies, PolicyRecyclerViewInterface policyInterface) {
-        if (mPolicies == null) {
-            mPolicies = new ArrayList<>();
-        }
-        mPoliciesFiltered = policies;
-        mInterface = policyInterface;
+        this.mPolicies = policies;
+        this.mPoliciesFiltered = policies;
+        this.mInterface = policyInterface;
     }
 
     @NonNull
@@ -50,6 +48,7 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
         Policy policy = mPoliciesFiltered.get(position);
         System.out.println("Position: " + position);
         holder.mTitle.setText(policy.getTitle());
+        holder.mDescription.setText(policy.getResponsible_officer().trim());
         holder.itemView.setTag(policy.getPdf_url());
         Log.d("TAG", "Url for item " + position + " is " + policy.getPdf_url());
         Log.d("TAG", "Title for item " + position + " is " + policy.getTitle());
@@ -79,6 +78,7 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
                 //Convert user input into string
 
                 String query = charSequence != null ? charSequence.toString() : "";
+                System.out.println("Search query: " + query);
 
                 //Check user query
                 if(query.isEmpty()) {
@@ -88,11 +88,16 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
                     //Create a new ArrayList to add filtered policies
                     ArrayList<Policy> filteredList = new ArrayList<>();
                     for(Policy policy : mPolicies) {
-                        if(policy.getTitle().toLowerCase().trim().contains(query.toLowerCase())) {
+                        String policyTitle = policy.getTitle().toLowerCase();
+                        String policyPurpose = policy.getPurpose().toLowerCase();
+                        if(policyTitle.contains(query.toLowerCase()) || policyPurpose.contains(query.toLowerCase())) {
                             filteredList.add(policy);
+                            System.out.println("Added to mPoliciesFiltered");
                         }
                     }
                     mPoliciesFiltered = filteredList;
+                    System.out.println("PolicyFiltered size: " + mPoliciesFiltered.size());
+                    System.out.println("mPolicies size: " + mPolicies.size());
                 }
                 FilterResults filterResults = new FilterResults();
                 filterResults.values = mPoliciesFiltered;

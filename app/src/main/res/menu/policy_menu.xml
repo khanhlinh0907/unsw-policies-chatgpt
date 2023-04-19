@@ -21,5 +21,6 @@
         android:icon="@android:drawable/ic_menu_search"
         android:title="Search"
         app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        android:theme="@style/CustomSearchViewStyle" />
 </menu>

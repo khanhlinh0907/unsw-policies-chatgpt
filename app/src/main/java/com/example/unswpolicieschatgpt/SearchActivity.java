@@ -1,5 +1,6 @@
 package com.example.unswpolicieschatgpt;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -38,10 +39,11 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
     BottomNavigationView bottomNav;
     // RecyclerView
     private RecyclerView mRecyclerView;
-    private List<Policy> policyList = new ArrayList<>();
+    private volatile List<Policy> policyList = new ArrayList<>();
     private PolicyDatabase policyDatabase;
     private PolicyAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+    private ProgressDialog mLoadingBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +81,16 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
         //Create an Adapter instance with an ArrayList of Policy objects
         mRecyclerView.setAdapter(adapter);
 
+        //Progression Bar
+        mLoadingBar = new ProgressDialog(SearchActivity.this);
+        mLoadingBar.setTitle("UNSW PolicyPilot ");
+        mLoadingBar.setMessage("Loading UNSW Policies & Guidelines");
+        mLoadingBar.setCanceledOnTouchOutside(false);
+        mLoadingBar.show();
+
+
+
+
         /**
          * Setup database
          */
@@ -89,13 +101,12 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
                     policyDatabase = Room.databaseBuilder(SearchActivity.this,
                             PolicyDatabase.class, "Policy_Database").fallbackToDestructiveMigration().build();
                     policyDatabase.setupDatabase(SearchActivity.this);
-                    List<Policy> retrievedPolicyList = policyDatabase.mainDao().getAll();
-                    policyList.clear();
-                    policyList.addAll(retrievedPolicyList);
+                    policyList = policyDatabase.mainDao().getAll();
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            mLoadingBar.dismiss();
                             adapter = new PolicyAdapter(policyList, SearchActivity.this);
                             mRecyclerView.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
@@ -109,10 +120,6 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
 
             }
         }).start();
-
-
-
-
 
         /**
          * Set up the policy category spinner
@@ -203,6 +210,9 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.policy_menu, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
+        //Set search hint
+        searchView.setQueryHint(getResources().getString(R.string.search_hint));
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -212,9 +222,9 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
             }
 
             @Override
-            public boolean onQueryTextChange(String s) {
-                Log.d(TAG, "Line 107:: Query = "+s);
-                adapter.getFilter().filter(s);
+            public boolean onQueryTextChange(String newText) {
+                Log.d(TAG, "Line 107:: Query = "+ newText);
+                adapter.getFilter().filter(newText);
                 return false;
             }
         });
