@@ -68,17 +68,19 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chatbot_conversation);
         setTitle("PolicyPilot");
 
-        // calling the action bar
-        ActionBar actionBar = getSupportActionBar();
-
-        // showing the back button in action bar
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
         //Change colour of top action bar
         Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.unsw_yellow)));
 
         // Change text colour of top action bar
         getSupportActionBar().setTitle(Html.fromHtml("<font color=\"black\">" + getString(R.string.app_name) + "</font>"));
+
+        // calling the action bar
+        ActionBar actionBar = getSupportActionBar();
+
+        // showing the back button in action bar
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("UNSW PolicyPilot");
+        //actionBar.setHomeAsUpIndicator(R.drawable.back_arrow);
 
         //Get the handle to RecyclerView
         mConvoRv = findViewById(R.id.conversationRV);
