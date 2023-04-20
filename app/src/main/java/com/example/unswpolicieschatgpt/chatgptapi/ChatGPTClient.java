@@ -33,9 +33,7 @@ public class ChatGPTClient {
 
         //Get the generated response text
         String generatedText = openAiService.createCompletion(completionRequest).getChoices().get(0).getText();
-        //openAiService.createCompletion(completionRequest).getChoices().forEach(System.out::println);
         return generatedText;
-
     }
 
 

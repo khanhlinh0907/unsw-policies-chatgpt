@@ -110,6 +110,11 @@ public abstract class PolicyDatabase extends RoomDatabase {
         return null;
     }
 
+    /**
+     * Create Policy Objects from extracted text from PDF files
+     * @param text
+     * @return
+     */
     public Policy getPolicyFromPDF(String text) {
         //Table schema
         String title, purpose, scope, content, responsible_officer, contact_officer, parent_doc;
@@ -180,11 +185,14 @@ public abstract class PolicyDatabase extends RoomDatabase {
         return newPolicy;
     }
 
+    /**
+     * Upload policy database into Firebase Database
+     */
     public static class UploadTask extends AsyncTask<Void, Void, Void> {
 
         private Context mContext;
         private PolicyDatabase mDatabase;
-        private ChatGPTClient chatGPTClient = new ChatGPTClient("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");
+        private ChatGPTClient chatGPTClient = new ChatGPTClient("YOUR_API_KEY");
 
         FirebaseDatabase mFirebaseDatabase;
 
@@ -243,7 +251,7 @@ public abstract class PolicyDatabase extends RoomDatabase {
                 }
             });
             /**
-             * Upload vectors of policy information to Firebase
+             * Upload vectors of policy information to Firebase Database
              */
             DatabaseReference vectorRef = mFirebaseDatabase.getReference("Vector");
 
@@ -281,9 +289,6 @@ public abstract class PolicyDatabase extends RoomDatabase {
                     // Handle error
                 }
             });
-
-
-
 
             return null;
         }

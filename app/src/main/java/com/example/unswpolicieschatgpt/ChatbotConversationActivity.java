@@ -92,7 +92,6 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
         //Change colour of top action bar
         Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.unsw_yellow)));
-
         getSupportActionBar().setTitle(Html.fromHtml("<font color=\"black\">" + getString(R.string.app_name) + "</font>"));
 
         // showing the back button in action bar
@@ -123,7 +122,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
         //Code testing the ChatGPT API library.
         //REPLACE BELOW TOKEN WITH YOUR OWN API_KEY. DO NOT PUSH THE TOKEN TO GITHUB.
-        String token = "API-KEY";
+        String token = "YOUR_API_KEY";
 
         chatGPTClient = new ChatGPTClient(token);
 
@@ -187,7 +186,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         @Override
         public void run() {
             //API KEY provided below. Do not push your key to Github. Replace "API_KEY" with your own key.
-            chatGPTClient = new ChatGPTClient("API_KEY");
+            chatGPTClient = new ChatGPTClient("YOUR_API_KEY");
 
             //Get embeddings of user input
             embedInput = chatGPTClient.embedQuery(userInput);
@@ -222,8 +221,8 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                             Long embeddingIndex = (Long) contentSnapshot.child("index").getValue();
                             embeddingList.add(embedding);
                             embeddingIndexList.add(embeddingIndex);
-
                         }
+
                         //Find the highest similarity score of each document
                         List findHighestScore = findHighestSimilarityScore(embeddingList, embedInput);
                         double highestScoreOfSingleDocument = (double) findHighestScore.get(0);
@@ -266,8 +265,6 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             policyTitle = (String) snapshot.child("title").getValue();
-                            System.out.println("Policy Title:" + policyTitle);
-                            pdf_url = (String) snapshot.child("pdf_url").getValue();
 
                             String response = (String) snapshot.child("content" + matchedSectionId).getValue();
                             String chatGPTPrompt = "Now you are UNSW AI Assistant." +
@@ -278,7 +275,6 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                                     "Ignore the context and no need to provide policy title if context is not relevant to user's query.";
 
                             new ChatGPTTask().execute(chatGPTPrompt);
-                            System.out.println("ChatGPT Prompt: " + chatGPTPrompt);
 
                         }
 
@@ -287,27 +283,6 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
                         }
                     });
-
-                    /*policyRef.child(matchedPolicyId).child("content" + matchedSectionId).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            String response = (String) dataSnapshot.getValue();
-                            String chatGPTPrompt = "Now you are UNSW AI Assistant." +
-                                    "Here is the user's query: " + userInput +
-                                    "Context you have: " + response.trim() +
-                                    "Policy title: " + policyTitle +
-                                    "Reply to user's query. Give them policy title for further reference" +
-                                    "Ignore the context and no need to provide policy title if context is not relevant to user's query.";
-
-                            new ChatGPTTask().execute(chatGPTPrompt);
-                            System.out.println("ChatGPT Prompt: " + chatGPTPrompt);
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });*/
                 }
 
                 @Override
@@ -319,8 +294,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         }
 
         /**
-         * Solution 1: ChatGPTTask
-         * Error: It prints out the prompt instead of ChatGPT response
+         * Get ChatGPT Response
          */
         private class ChatGPTTask extends AsyncTask<String, Void, String> {
             @Override
@@ -345,8 +319,6 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                 // Update the UI with the generated response
                 mConversation.add(new ConversationMessage("BOT", response));
                 adapter.notifyDataSetChanged();
-                //displayResponse("Do you have any other questions?");
-
 
             }
         }
@@ -368,7 +340,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         }
     }
 
-                /**
+    /**
      * Cosine Similarity Function
      * @param v1
      * @param v2
@@ -405,6 +377,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
         for (int i=0; i<embeddingList.size(); i++) {
             double similarity = cosineSimilarity(embeddingList.get(i), embedInput.getEmbedding());
+
 
             if (highestSimilarityScore < similarity) {
                 highestSimilarityScore = similarity;
