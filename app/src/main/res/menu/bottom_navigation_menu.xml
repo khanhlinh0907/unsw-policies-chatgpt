@@ -22,6 +22,6 @@
         android:enabled="true"
         android:icon="@drawable/chatbot_icon_yellow"
         android:title="@string/nav_chatbot"
-        app:itemIconSize="4dp"
+        app:itemIconSize="2dp"
         app:showAsAction="always" />
 </menu>

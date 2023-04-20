@@ -20,16 +20,8 @@
 
     <string-array name="policy_categories">
         <item>Any category</item>
-        <item>Assessments</item>
-        <item>Employment</item>
-        <item>Engagement</item>
-        <item>Facilities and IT</item>
-        <item>Finance and Procurement</item>
-        <item>Governance and Mgmt</item>
-        <item>Health and Safety</item>
-        <item>Research and Training</item>
-        <item>Student support</item>
-        <item>Teaching and Learning</item>
+        <item>Assessment</item>
+        <item>Enrolment</item>
     </string-array>
     <string name="title_activity_chatbot_conversation">ChatbotActivityConversation</string>
     <string name="view_policies_or_guidelines">View Policies or GuideLines</string>
