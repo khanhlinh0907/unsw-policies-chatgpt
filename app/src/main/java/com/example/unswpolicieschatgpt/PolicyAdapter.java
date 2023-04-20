@@ -163,7 +163,7 @@ public class PolicyAdapter extends RecyclerView.Adapter<PolicyAdapter.MyViewHold
                 @Override
                 public void onClick(View view) {
                     if (mInterface != null) {
-                        mInterface.onPolicyClick((URL) itemView.getTag());
+                        mInterface.onPolicyClick((String) itemView.getTag());
                     }
 
                 }

@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import com.example.unswpolicieschatgpt.database.Policy;
-import com.example.unswpolicieschatgpt.database.PolicyDao;
 import com.example.unswpolicieschatgpt.database.PolicyDatabase;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -195,13 +194,13 @@ public class SearchActivity extends AppCompatActivity implements PolicyRecyclerV
     }
 
     @Override
-    public void onPolicyClick(URL url) {
+    public void onPolicyClick(String url) {
         // Retrieve the selected policy from the database using its ID
         Log.d("SearchActivity", "onPolicyClick: url = " + url);
         Intent intent = new Intent(SearchActivity.this, WebActivity.class);
 
         //Changed URL to String to allow it ot be passed to the Intent. Resolve issue - does WebView require URl object or URL as a String?
-        intent.putExtra(WebActivity.INTENT_MESSAGE, url.toString());
+        intent.putExtra(WebActivity.INTENT_MESSAGE, url);
         startActivity(intent);
     }
 

@@ -123,7 +123,8 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
         //Code testing the ChatGPT API library.
         //REPLACE BELOW TOKEN WITH YOUR OWN API_KEY. DO NOT PUSH THE TOKEN TO GITHUB.
-        String token = "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";
+        String token = "API_KEY";
+
         chatGPTClient = new ChatGPTClient(token);
 
         //Handling user messages and Send Button.
@@ -185,7 +186,9 @@ public class ChatbotConversationActivity extends AppCompatActivity {
          */
         @Override
         public void run() {
-            chatGPTClient = new ChatGPTClient("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");
+            //API KEY provided below. Do not push your key to Github. Replace "API_KEY" with your own key.
+            chatGPTClient = new ChatGPTClient("API_KEY");
+
             //Get embeddings of user input
             embedInput = chatGPTClient.embedQuery(userInput);
 
