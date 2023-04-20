@@ -123,7 +123,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
         //Code testing the ChatGPT API library.
         //REPLACE BELOW TOKEN WITH YOUR OWN API_KEY. DO NOT PUSH THE TOKEN TO GITHUB.
-        String token = "API_KEY";
+        String token = "API-KEY";
 
         chatGPTClient = new ChatGPTClient(token);
 
@@ -171,7 +171,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
         private Embedding embedInput;
         private String matchedPolicyId;
         private String matchedSectionId;
-        private String policyTitle;
+        private volatile String policyTitle;
 
         private String pdf_url;
 
@@ -259,13 +259,27 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
                     DatabaseReference policyRef = mFirebaseDatabase.getReference("Policy");
 
-                    //Get policy title
+                    /**
+                     * Send prompt to ChatGPT
+                     */
                     policyRef.child(matchedPolicyId).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             policyTitle = (String) snapshot.child("title").getValue();
                             System.out.println("Policy Title:" + policyTitle);
                             pdf_url = (String) snapshot.child("pdf_url").getValue();
+
+                            String response = (String) snapshot.child("content" + matchedSectionId).getValue();
+                            String chatGPTPrompt = "Now you are UNSW AI Assistant." +
+                                    "Here is the user's query: " + userInput +
+                                    "Context you have: " + response.trim() +
+                                    "Policy title: " + policyTitle +
+                                    "Reply to user's query. Give them policy title for further reference" +
+                                    "Ignore the context and no need to provide policy title if context is not relevant to user's query.";
+
+                            new ChatGPTTask().execute(chatGPTPrompt);
+                            System.out.println("ChatGPT Prompt: " + chatGPTPrompt);
+
                         }
 
                         @Override
@@ -273,10 +287,8 @@ public class ChatbotConversationActivity extends AppCompatActivity {
 
                         }
                     });
-                    /**
-                     * Find the matching content of the highest similarity vector
-                     */
-                    policyRef.child(matchedPolicyId).child("content" + matchedSectionId).addListenerForSingleValueEvent(new ValueEventListener() {
+
+                    /*policyRef.child(matchedPolicyId).child("content" + matchedSectionId).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             String response = (String) dataSnapshot.getValue();
@@ -284,9 +296,8 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                                     "Here is the user's query: " + userInput +
                                     "Context you have: " + response.trim() +
                                     "Policy title: " + policyTitle +
-                                    "Reply to user's query." +
-                                    "Add this sentence at the end only if the context is relevant to user's query: For more details please refer to" + policyTitle +
-                                    "Ignore the context and no need to provide the last sentence if you think it's irrelevant to user's query.";
+                                    "Reply to user's query. Give them policy title for further reference" +
+                                    "Ignore the context and no need to provide policy title if context is not relevant to user's query.";
 
                             new ChatGPTTask().execute(chatGPTPrompt);
                             System.out.println("ChatGPT Prompt: " + chatGPTPrompt);
@@ -296,7 +307,7 @@ public class ChatbotConversationActivity extends AppCompatActivity {
                         public void onCancelled(@NonNull DatabaseError error) {
 
                         }
-                    });
+                    });*/
                 }
 
                 @Override

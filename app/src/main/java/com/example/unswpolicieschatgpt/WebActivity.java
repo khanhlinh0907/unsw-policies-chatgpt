@@ -1,5 +1,7 @@
 package com.example.unswpolicieschatgpt;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
@@ -8,12 +10,15 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.net.URL;
 import java.util.Objects;
@@ -31,22 +36,28 @@ public class WebActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
 
-        backToSearch = findViewById(R.id.backToSearchButton);
-        backToSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(WebActivity.this, SearchActivity.class);
-                startActivity(intent);
-            }
-        });
+        // calling the action bar
+        ActionBar actionBar = getSupportActionBar();
 
-        /*
-        Change colour of top action bar
-         */
+        //Set the back icon using the vector drawable resource ID
+        actionBar.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24);
+
+        //Set the title and center align it
+        TextView titleTextView = new TextView(this);
+        titleTextView.setText("UNSW PolicyPilot");
+        titleTextView.setTextSize(24);
+        titleTextView.setTextColor(getResources().getColor(R.color.black));
+        titleTextView.setGravity(Gravity.CENTER);
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(titleTextView);
+        //Change colour of top action bar
         Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.unsw_yellow)));
 
-        // Change text colour of top action bar
         getSupportActionBar().setTitle(Html.fromHtml("<font color=\"black\">" + getString(R.string.app_name) + "</font>"));
+
+        // showing the back button in action bar
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("UNSW PolicyPilot");
 
         /**
          * Get the intent that started the activity
@@ -102,6 +113,16 @@ public class WebActivity extends AppCompatActivity {
             //18 = JellyBean MR2, KITKAT=19
             webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         }
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        backToChatbot();
+        return true;
+    }
+
+    private void backToChatbot() {
+        Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
+        startActivity(intent);
     }
 
 
